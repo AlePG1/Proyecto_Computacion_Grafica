@@ -242,12 +242,124 @@ int main() {
             {glm::vec3(-25.0f, 10.5f, -23.0f), 90.0f, glm::vec3(8.0f)},  // cpu
             {glm::vec3(-32.0f, 6.8f, -23.0f), 90.0f, glm::vec3(7.8f)}   // silla
         },
-        // ... (resto de las configuraciones de puestos de trabajo)
+        {
+            {glm::vec3(-25.0f, 5.7f, -13.0f), 90.0f, glm::vec3(10.0f)},
+            {glm::vec3(-25.0f, 10.5f, -13.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(-32.0f, 6.8f, -13.0f), 90.0f, glm::vec3(7.8f)}
+        },
+        // Fila 2
+        {
+            {glm::vec3(-25.0f, 5.7f, 13.0f), 90.0f, glm::vec3(10.0f)},
+            {glm::vec3(-25.0f, 10.5f, 13.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(-32.0f, 6.8f, 13.0f), 90.0f, glm::vec3(7.8f)}
+        },
+        {
+            {glm::vec3(-25.0f, 5.7f, 23.0f), 90.0f, glm::vec3(10.0f)},
+            {glm::vec3(-25.0f, 10.5f, 23.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(-32.0f, 6.8f, 23.0f), 90.0f, glm::vec3(7.8f)}
+        },
+        // Fila 3 (centro)
+        {
+            {glm::vec3(-6.0f, 5.7f, 23.0f), 90.0f, glm::vec3(10.0f)},
+            {glm::vec3(-6.0f, 10.5f, 23.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(-13.0f, 6.8f, 23.0f), 90.0f, glm::vec3(7.8f)}
+        },
+        {
+            {glm::vec3(-6.0f, 5.7f, 13.0f), 90.0f, glm::vec3(10.0f)},
+            {glm::vec3(-6.0f, 10.5f, 13.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(-13.0f, 6.8f, 13.0f), 90.0f, glm::vec3(7.8f)}
+        },
+        {
+            {glm::vec3(-6.0f, 5.7f, -13.0f), 90.0f, glm::vec3(10.0f)},
+            {glm::vec3(-6.0f, 10.5f, -13.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(-13.0f, 6.8f, -13.0f), 90.0f, glm::vec3(7.8f)}
+        },
+        {
+            {glm::vec3(-6.0f, 5.7f, -23.0f), 90.0f, glm::vec3(10.0f)},
+            {glm::vec3(-6.0f, 10.5f, -23.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(-13.0f, 6.8f, -23.0f), 90.0f, glm::vec3(7.8f)}
+        },
+        // Fila 4 (derecha)
+        {
+            {glm::vec3(13.0f, 5.7f, -13.0f), 90.0f, glm::vec3(10.0f)},
+            {glm::vec3(13.0f, 10.5f, -13.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(6.0f, 6.8f, -13.0f), 90.0f, glm::vec3(7.8f)}
+        },
+        {
+            {glm::vec3(13.0f, 5.7f, -23.0f), 90.0f, glm::vec3(10.0f)},
+            {glm::vec3(13.0f, 10.5f, -23.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(6.0f, 6.8f, -23.0f), 90.0f, glm::vec3(7.8f)}
+        },
+        {
+            {glm::vec3(13.0f, 5.7f, 13.0f), 90.0f, glm::vec3(10.0f)},
+            {glm::vec3(13.0f, 10.5f, 13.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(6.0f, 6.8f, 13.0f), 90.0f, glm::vec3(7.8f)}
+        },
+        {
+            {glm::vec3(13.0f, 5.7f, 23.0f), 90.0f, glm::vec3(10.0f)},
+            {glm::vec3(13.0f, 10.5f, 23.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(6.0f, 6.8f, 23.0f), 90.0f, glm::vec3(7.8f)}
+        },
+        // Fila 5 (fondo derecho)
+        {
+            {glm::vec3(32.0f, 5.7f, 23.0f), 90.0f, glm::vec3(10.0f)},
+            {glm::vec3(32.0f, 10.5f, 23.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(25.0f, 6.8f, 23.0f), 90.0f, glm::vec3(7.8f)}
+        },
+        {
+            {glm::vec3(32.0f, 5.7f, 13.0f), 90.0f, glm::vec3(10.0f)},
+            {glm::vec3(32.0f, 10.5f, 13.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(25.0f, 6.8f, 13.0f), 90.0f, glm::vec3(7.8f)}
+        },
+        {
+            {glm::vec3(32.0f, 5.7f, -13.0f), 90.0f, glm::vec3(10.0f)},
+            {glm::vec3(32.5f, 10.5f, -13.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(25.0f, 6.8f, -13.0f), 90.0f, glm::vec3(7.8f)}
+        },
+        {
+            {glm::vec3(32.0f, 5.7f, -23.0f), 90.0f, glm::vec3(10.0f)},
+            {glm::vec3(32.5f, 10.5f, -23.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(25.0f, 6.8f, -23.0f), 90.0f, glm::vec3(7.8f)}
+        },
+        // Fila 6 (última fila derecha)
+        {
+            {glm::vec3(51.0f, 5.7f, -23.0f), 90.0f, glm::vec3(10.0f)},
+            {glm::vec3(51.0f, 10.5f, -23.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(44.0f, 6.8f, -23.0f), 90.0f, glm::vec3(7.8f)}
+        },
+        {
+            {glm::vec3(51.0f, 5.7f, -13.0f), 90.0f, glm::vec3(10.0f)},
+            {glm::vec3(51.0f, 10.5f, -13.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(44.0f, 6.8f, -13.0f), 90.0f, glm::vec3(7.8f)}
+        },
+        {
+            {glm::vec3(51.0f, 5.7f, 13.0f), 90.0f, glm::vec3(10.0f)},
+            {glm::vec3(51.0f, 10.5f, 13.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(44.0f, 6.8f, 13.0f), 90.0f, glm::vec3(7.8f)}
+        },
+        {
+            {glm::vec3(51.0f, 5.7f, 23.0f), 90.0f, glm::vec3(10.0f)},
+            {glm::vec3(51.0f, 10.5f, 23.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(44.0f, 6.8f, 23.0f), 90.0f, glm::vec3(7.8f)}
+        }
     };
 
     // Configuración de paredes
     std::vector<ModelInstance> walls = {
-        // ... (configuraciones de paredes existentes)
+        // Pared izquierda
+        {glm::vec3(10.0f, 17.0f, -30.7f), 90.0f, glm::vec3(144.0f, 30.0f, 3.0f)},
+        // Pared derecha 1
+        {glm::vec3(75.0f, 17.0f, 38.0f), 90.0f, glm::vec3(13.0f, 30.0f, 17.0f)},
+        // Pared derecha 2
+        {glm::vec3(16.0f, 17.0f, 38.0f), 90.0f, glm::vec3(4.0f, 30.0f, 17.0f)},
+        // Pared derecha 3
+        {glm::vec3(-47.0f, 17.0f, 38.0f), 90.0f, glm::vec3(31.5f, 30.0f, 17.0f)},
+        // Parte pared derecha
+        {glm::vec3(30.0f, 7.0f, 45.0f), 90.0f, glm::vec3(125.2f, 9.2f, 5.0f)},
+        // Pared frontal
+        {glm::vec3(1.0f, 17.0f, -82.3f), 0.0f, glm::vec3(63.0f, 30.0f, 3.0f)},
+        // Pared trasera
+        {glm::vec3(8.9f, 17.0f, 61.0f), 0.0f, glm::vec3(43.3f, 30.0f, 3.0f)}
     };
 
     // Configuración de ventanas
@@ -256,14 +368,14 @@ int main() {
         {glm::vec3(37.4f, 19.5f, 11.0f), 0.0f, glm::vec3(40.7f, 20.7f, 50.7f)}
     };
 
-    // Configuración de mesas adicionales
+    // Configuración de mesas adicionales (solo una definición)
     ModelInstance teacherDesk = { glm::vec3(70.0f, 5.7f, -20.0f), 90.0f, glm::vec3(10.0f, 10.0f, 18.0f) };
     ModelInstance additionalDesk = { glm::vec3(-44.0f, 5.7f, 20.0f), 90.0f, glm::vec3(10.0f, 10.0f, 18.0f) };
 
     // Precalcular matrices para objetos estáticos
     const glm::mat4 lampTransform = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.4f, 30.0f, -15.5f)), glm::vec3(40.7f, 42.7f, 00.7f));
     const glm::mat4 ceilingTransform = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.4f, 30.0f, -15.5f)), glm::vec3(60.7f, 5.7f, 150.7f));
-    const glm::mat4 floorTransform = glm::scale(glm::translate(glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)), glm::vec3(2.2f, -5.0f, -10.5f)), glm::vec3(60.7f, 110.7f, 145.7f));
+    const glm::mat4 floorTransform = glm::scale(glm::translate(glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)), glm::vec3(2.2f, -5.0f, -10.5f)), glm::vec3(60.7f, 110.7f, 145.7f));//145.7f
     const glm::mat4 boardTransform = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 10.0f, -80.0f)), glm::vec3(30.0f, 14.0f, 25.0f));
     const glm::mat4 frontWallTransform = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 17.0f, -82.3f)), glm::vec3(63.0f, 30.0f, 3.0f));
 
