@@ -82,7 +82,11 @@ int main() {
     Shader shadowShader("Shader/shadow.vs", "Shader/shadow.frag");
 
     Model piso((char*)"Models/Proyecto/piso/piso.obj"); // Cargar modelo del piso
+<<<<<<< Updated upstream
     Model pared((char*)"Models/Proyecto/Pared/tripo_pbr_model_01b89d8b-a342-4896-89aa-fe20ab730130.obj"); // Cargar modelo de pared
+=======
+    Model pared((char*)"Models/Proyecto/Pared/pared.obj"); // Cargar modelo de pared
+>>>>>>> Stashed changes
     Model techoo((char*)"Models/Proyecto/piso1/piso.obj");   // Cargar modelo del techo
     Model lampara((char*)"Models/Proyecto/lampled/lampled.obj"); // Cargar modelo de lámpara
     Model pizarron((char*)"Models/Proyecto/pizarron/pizarron.obj"); // Cargar modelo del pizarrón
@@ -96,6 +100,7 @@ int main() {
         // Fila 1 (izquierda)
         {
             {glm::vec3(-25.0f, 5.7f, -23.0f), 90.0f, glm::vec3(10.0f)}, // mesa
+<<<<<<< Updated upstream
             {glm::vec3(26.0f, 10.6f, 20.0f), -95.0f, glm::vec3(8.0f)},  // cpu
             {glm::vec3(-29.0f, 6.8f, -23.0f), 90.0f, glm::vec3(7.8f)}   // silla
         },
@@ -103,10 +108,20 @@ int main() {
             {glm::vec3(-25.0f, 5.7f, -13.0f), 90.0f, glm::vec3(10.0f)},
             {glm::vec3(25.5f, 10.6f, 11.0f), -95.0f, glm::vec3(8.0f)},
             {glm::vec3(-29.0f, 6.8f, -13.0f), 90.0f, glm::vec3(7.8f)}
+=======
+            {glm::vec3(-25.0f, 10.5f, -23.0f), 90.0f, glm::vec3(8.0f)},  // cpu
+            {glm::vec3(-32.0f, 6.8f, -23.0f), 90.0f, glm::vec3(7.8f)}   // silla
+        },
+        {
+            {glm::vec3(-25.0f, 5.7f, -13.0f), 90.0f, glm::vec3(10.0f)},
+            {glm::vec3(-25.0f, 10.5f, -13.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(-32.0f, 6.8f, -13.0f), 90.0f, glm::vec3(7.8f)}
+>>>>>>> Stashed changes
         },
         // Fila 2
         {
             {glm::vec3(-25.0f, 5.7f, 13.0f), 90.0f, glm::vec3(10.0f)},
+<<<<<<< Updated upstream
             {glm::vec3(23.8f, 10.6f, -16.0f), -95.0f, glm::vec3(8.0f)},
             {glm::vec3(-29.0f, 6.8f, 13.0f), 90.0f, glm::vec3(7.8f)}
         },
@@ -114,10 +129,20 @@ int main() {
             {glm::vec3(-25.0f, 5.7f, 23.0f), 90.0f, glm::vec3(10.0f)},
             {glm::vec3(22.8f, 10.6f, -25.0f), -95.0f, glm::vec3(8.0f)},
             {glm::vec3(-29.0f, 6.8f, 23.0f), 90.0f, glm::vec3(7.8f)}
+=======
+            {glm::vec3(-25.0f, 10.5f, 13.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(-32.0f, 6.8f, 13.0f), 90.0f, glm::vec3(7.8f)}
+        },
+        {
+            {glm::vec3(-25.0f, 5.7f, 23.0f), 90.0f, glm::vec3(10.0f)},
+            {glm::vec3(-25.0f, 10.5f, 23.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(-32.0f, 6.8f, 23.0f), 90.0f, glm::vec3(7.8f)}
+>>>>>>> Stashed changes
         },
         // Fila 3 (centro)
         {
             {glm::vec3(-6.0f, 5.7f, 23.0f), 90.0f, glm::vec3(10.0f)},
+<<<<<<< Updated upstream
             {glm::vec3(3.8f, 10.6f, -23.0f), -95.0f, glm::vec3(8.0f)},
             {glm::vec3(-10.0f, 6.8f, 23.0f), 90.0f, glm::vec3(7.8f)}
         },
@@ -135,10 +160,30 @@ int main() {
             {glm::vec3(-6.0f, 5.7f, -23.0f), 90.0f, glm::vec3(10.0f)},
             {glm::vec3(7.5f, 10.6f, 23.0f), -95.0f, glm::vec3(8.0f)},
             {glm::vec3(-10.0f, 6.8f, -23.0f), 90.0f, glm::vec3(7.8f)}
+=======
+            {glm::vec3(-6.0f, 10.5f, 23.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(-13.0f, 6.8f, 23.0f), 90.0f, glm::vec3(7.8f)}
+        },
+        {
+            {glm::vec3(-6.0f, 5.7f, 13.0f), 90.0f, glm::vec3(10.0f)},
+            {glm::vec3(-6.0f, 10.5f, 13.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(-13.0f, 6.8f, 13.0f), 90.0f, glm::vec3(7.8f)}
+        },
+        {
+            {glm::vec3(-6.0f, 5.7f, -13.0f), 90.0f, glm::vec3(10.0f)},
+            {glm::vec3(-6.0f, 10.5f, -13.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(-13.0f, 6.8f, -13.0f), 90.0f, glm::vec3(7.8f)}
+        },
+        {
+            {glm::vec3(-6.0f, 5.7f, -23.0f), 90.0f, glm::vec3(10.0f)},
+            {glm::vec3(-6.0f, 10.5f, -23.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(-13.0f, 6.8f, -23.0f), 90.0f, glm::vec3(7.8f)}
+>>>>>>> Stashed changes
         },
         // Fila 4 (derecha)
         {
             {glm::vec3(13.0f, 5.7f, -13.0f), 90.0f, glm::vec3(10.0f)},
+<<<<<<< Updated upstream
             {glm::vec3(-11.5f, 10.6f, 25.0f), -95.0f, glm::vec3(8.0f)},
             {glm::vec3(9.0f, 6.8f, -13.0f), 90.0f, glm::vec3(7.8f)}
         },
@@ -156,10 +201,30 @@ int main() {
             {glm::vec3(13.0f, 5.7f, 23.0f), 90.0f, glm::vec3(10.0f)},
             {glm::vec3(-15.0f, 10.6f, -21.0f), -95.0f, glm::vec3(8.0f)},
             {glm::vec3(9.0f, 6.8f, 23.0f), 90.0f, glm::vec3(7.8f)}
+=======
+            {glm::vec3(13.0f, 10.5f, -13.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(6.0f, 6.8f, -13.0f), 90.0f, glm::vec3(7.8f)}
+        },
+        {
+            {glm::vec3(13.0f, 5.7f, -23.0f), 90.0f, glm::vec3(10.0f)},
+            {glm::vec3(13.0f, 10.5f, -23.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(6.0f, 6.8f, -23.0f), 90.0f, glm::vec3(7.8f)}
+        },
+        {
+            {glm::vec3(13.0f, 5.7f, 13.0f), 90.0f, glm::vec3(10.0f)},
+            {glm::vec3(13.0f, 10.5f, 13.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(6.0f, 6.8f, 13.0f), 90.0f, glm::vec3(7.8f)}
+        },
+        {
+            {glm::vec3(13.0f, 5.7f, 23.0f), 90.0f, glm::vec3(10.0f)},
+            {glm::vec3(13.0f, 10.5f, 23.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(6.0f, 6.8f, 23.0f), 90.0f, glm::vec3(7.8f)}
+>>>>>>> Stashed changes
         },
         // Fila 5 (fondo derecho)
         {
             {glm::vec3(32.0f, 5.7f, 23.0f), 90.0f, glm::vec3(10.0f)},
+<<<<<<< Updated upstream
             {glm::vec3(-33.0f, 10.6f, -21.0f), -95.0f, glm::vec3(8.0f)},
             {glm::vec3(28.0f, 6.8f, 23.0f), 90.0f, glm::vec3(7.8f)}
         },
@@ -177,10 +242,30 @@ int main() {
             {glm::vec3(32.0f, 5.7f, -23.0f), 90.0f, glm::vec3(10.0f)},
             {glm::vec3(-30.5f, 10.6f, 25.0f), -95.0f, glm::vec3(8.0f)},
             {glm::vec3(28.0f, 6.8f, -23.0f), 90.0f, glm::vec3(7.8f)}
+=======
+            {glm::vec3(32.0f, 10.5f, 23.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(25.0f, 6.8f, 23.0f), 90.0f, glm::vec3(7.8f)}
+        },
+        {
+            {glm::vec3(32.0f, 5.7f, 13.0f), 90.0f, glm::vec3(10.0f)},
+            {glm::vec3(32.0f, 10.5f, 13.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(25.0f, 6.8f, 13.0f), 90.0f, glm::vec3(7.8f)}
+        },
+        {
+            {glm::vec3(32.0f, 5.7f, -13.0f), 90.0f, glm::vec3(10.0f)},
+            {glm::vec3(32.5f, 10.5f, -13.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(25.0f, 6.8f, -13.0f), 90.0f, glm::vec3(7.8f)}
+        },
+        {
+            {glm::vec3(32.0f, 5.7f, -23.0f), 90.0f, glm::vec3(10.0f)},
+            {glm::vec3(32.5f, 10.5f, -23.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(25.0f, 6.8f, -23.0f), 90.0f, glm::vec3(7.8f)}
+>>>>>>> Stashed changes
         },
         // Fila 6 (última fila derecha)
         {
             {glm::vec3(51.0f, 5.7f, -23.0f), 90.0f, glm::vec3(10.0f)},
+<<<<<<< Updated upstream
             {glm::vec3(-50.0f, 10.6f, 27.0f), -95.0f, glm::vec3(8.0f)},
             {glm::vec3(47.0f, 6.8f, -23.0f), 90.0f, glm::vec3(7.8f)}
         },
@@ -198,6 +283,25 @@ int main() {
             {glm::vec3(51.0f, 5.7f, 23.0f), 90.0f, glm::vec3(10.0f)},
             {glm::vec3(-53.0f, 10.6f, -19.0f), -95.0f, glm::vec3(8.0f)},
             {glm::vec3(47.0f, 6.8f, 23.0f), 90.0f, glm::vec3(7.8f)}
+=======
+            {glm::vec3(51.0f, 10.5f, -23.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(44.0f, 6.8f, -23.0f), 90.0f, glm::vec3(7.8f)}
+        },
+        {
+            {glm::vec3(51.0f, 5.7f, -13.0f), 90.0f, glm::vec3(10.0f)},
+            {glm::vec3(51.0f, 10.5f, -13.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(44.0f, 6.8f, -13.0f), 90.0f, glm::vec3(7.8f)}
+        },
+        {
+            {glm::vec3(51.0f, 5.7f, 13.0f), 90.0f, glm::vec3(10.0f)},
+            {glm::vec3(51.0f, 10.5f, 13.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(44.0f, 6.8f, 13.0f), 90.0f, glm::vec3(7.8f)}
+        },
+        {
+            {glm::vec3(51.0f, 5.7f, 23.0f), 90.0f, glm::vec3(10.0f)},
+            {glm::vec3(51.0f, 10.5f, 23.0f), 90.0f, glm::vec3(8.0f)},
+            {glm::vec3(44.0f, 6.8f, 23.0f), 90.0f, glm::vec3(7.8f)}
+>>>>>>> Stashed changes
         }
     };
 
