@@ -9,10 +9,10 @@ Ke 0.0 0.0 0.0
 Ni 1.0
 d 1
 illum 3
-map_Kd Color_627eaf31-36c9-4693-bd40-d1da269c5ad4.jpg
-map_Ns ORM_627eaf31-36c9-4693-bd40-d1da269c5ad4.jpg
-refl ORM_627eaf31-36c9-4693-bd40-d1da269c5ad4.jpg
-bump NormalGL_627eaf31-36c9-4693-bd40-d1da269c5ad4.jpg
+map_Kd Color_21739d9d-c5ee-4019-bae9-f8d60c3e4c8d.jpg
+map_Ns ORM_21739d9d-c5ee-4019-bae9-f8d60c3e4c8d.jpg
+refl ORM_21739d9d-c5ee-4019-bae9-f8d60c3e4c8d.jpg
+bump NormalGL_21739d9d-c5ee-4019-bae9-f8d60c3e4c8d.jpg
 
 newmtl mat1
 Ns 250
