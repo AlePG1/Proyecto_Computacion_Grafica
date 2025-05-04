@@ -11,7 +11,7 @@
 #include "SOIL2/SOIL2.h"
 #include "stb_image.h"
 
-const GLuint WIDTH = 800, HEIGHT = 600;
+const GLuint WIDTH = 1200, HEIGHT = 900;
 int SCREEN_WIDTH, SCREEN_HEIGHT;
 
 void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode);
@@ -345,15 +345,15 @@ int main() {
             {glm::vec3(-25.0f, 5.7f, -23.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
             {glm::vec3(-25.0f, 9.1f, -26.0f), 90.0f, glm::vec3(5.5f)},
             {glm::vec3(-25.0f, 9.1f, -20.0f), 90.0f, glm::vec3(5.5f)},
-            {glm::vec3(-30.0f, 6.8f, -26.0f), 90.0f, glm::vec3(4.8f)},
-            {glm::vec3(-30.0f, 6.8f, -20.0f), 90.0f, glm::vec3(4.8f)}
+            {glm::vec3(-30.0f, 6.6f, -26.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(-30.0f, 6.6f, -20.0f), 90.0f, glm::vec3(4.8f)}
         },
         {
             {glm::vec3(-25.0f, 5.7f, -10.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
             {glm::vec3(-25.0f, 9.1f, -14.0f), 90.0f, glm::vec3(5.5f)},
             {glm::vec3(-25.0f, 9.1f, -8.0f), 90.0f, glm::vec3(5.5f)},
-            {glm::vec3(-30.0f, 6.8f, -14.0f), 90.0f, glm::vec3(4.8f)},
-            {glm::vec3(-30.0f, 6.8f, -8.0f), 90.0f, glm::vec3(4.8f)}
+            {glm::vec3(-30.0f, 6.6f, -14.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(-30.0f, 6.6f, -8.0f), 90.0f, glm::vec3(4.8f)}
         },
 
         // Fila 2 (izquierda)
@@ -361,15 +361,15 @@ int main() {
             {glm::vec3(-10.0f, 5.7f, -23.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
             {glm::vec3(-10.0f, 9.1f, -26.0f), 90.0f, glm::vec3(5.5f)},
             {glm::vec3(-10.0f, 9.1f, -20.0f), 90.0f, glm::vec3(5.5f)},
-            {glm::vec3(-15.0f, 6.8f, -26.0f), 90.0f, glm::vec3(4.8f)},
-            {glm::vec3(-15.0f, 6.8f, -20.0f), 90.0f, glm::vec3(4.8f)}
+            {glm::vec3(-15.0f, 6.6f, -26.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(-15.0f, 6.6f, -20.0f), 90.0f, glm::vec3(4.8f)}
         },
         {
             {glm::vec3(-10.0f, 5.7f, -10.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
             {glm::vec3(-10.0f, 9.1f, -14.0f), 90.0f, glm::vec3(5.5f)},
             {glm::vec3(-10.0f, 9.1f, -8.0f), 90.0f, glm::vec3(5.5f)},
-            {glm::vec3(-15.0f, 6.8f, -14.0f), 90.0f, glm::vec3(4.8f)},
-            {glm::vec3(-15.0f, 6.8f, -8.0f), 90.0f, glm::vec3(4.8f)}
+            {glm::vec3(-15.0f, 6.6f, -14.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(-15.0f, 6.6f, -8.0f), 90.0f, glm::vec3(4.8f)}
         },
 
         // Fila 3 (izquierda)
@@ -377,15 +377,15 @@ int main() {
             {glm::vec3(5.0f, 5.7f, -23.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
             {glm::vec3(5.0f, 9.1f, -26.0f), 90.0f, glm::vec3(5.5f)},
             {glm::vec3(5.0f, 9.1f, -20.0f), 90.0f, glm::vec3(5.5f)},
-            {glm::vec3(0.0f, 6.8f, -26.0f), 90.0f, glm::vec3(4.8f)},
-            {glm::vec3(0.0f, 6.8f, -20.0f), 90.0f, glm::vec3(4.8f)}
+            {glm::vec3(0.0f, 6.6f, -26.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(0.0f, 6.6f, -20.0f), 90.0f, glm::vec3(4.8f)}
         },
         {
             {glm::vec3(5.0f, 5.7f, -10.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
             {glm::vec3(5.0f, 9.1f, -14.0f), 90.0f, glm::vec3(5.5f)},
             {glm::vec3(5.0f, 9.1f, -8.0f), 90.0f, glm::vec3(5.5f)},
-            {glm::vec3(0.0f, 6.8f, -14.0f), 90.0f, glm::vec3(4.8f)},
-            {glm::vec3(0.0f, 6.8f, -8.0f), 90.0f, glm::vec3(4.8f)}
+            {glm::vec3(0.0f, 6.6f, -14.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(0.0f, 6.6f, -8.0f), 90.0f, glm::vec3(4.8f)}
         },
 
         // Fila 4 (izquierda)
@@ -393,15 +393,15 @@ int main() {
             {glm::vec3(20.0f, 5.7f, -23.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
             {glm::vec3(20.0f, 9.1f, -26.0f), 90.0f, glm::vec3(5.5f)},
             {glm::vec3(20.0f, 9.1f, -20.0f), 90.0f, glm::vec3(5.5f)},
-            {glm::vec3(15.0f, 6.8f, -26.0f), 90.0f, glm::vec3(4.8f)},
-            {glm::vec3(15.0f, 6.8f, -20.0f), 90.0f, glm::vec3(4.8f)}
+            {glm::vec3(15.0f, 6.6f, -26.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(15.0f, 6.6f, -20.0f), 90.0f, glm::vec3(4.8f)}
         },
         {
             {glm::vec3(20.0f, 5.7f, -10.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
             {glm::vec3(20.0f, 9.1f, -14.0f), 90.0f, glm::vec3(5.5f)},
             {glm::vec3(20.0f, 9.1f, -8.0f), 90.0f, glm::vec3(5.5f)},
-            {glm::vec3(15.0f, 6.8f, -14.0f), 90.0f, glm::vec3(4.8f)},
-            {glm::vec3(15.0f, 6.8f, -8.0f), 90.0f, glm::vec3(4.8f)}
+            {glm::vec3(15.0f, 6.6f, -14.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(15.0f, 6.6f, -8.0f), 90.0f, glm::vec3(4.8f)}
         },
 
         // Fila 5 (izquierda)
@@ -409,118 +409,119 @@ int main() {
             {glm::vec3(35.0f, 5.7f, -23.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
             {glm::vec3(35.0f, 9.1f, -26.0f), 90.0f, glm::vec3(5.5f)},
             {glm::vec3(35.0f, 9.1f, -20.0f), 90.0f, glm::vec3(5.5f)},
-            {glm::vec3(30.0f, 6.8f, -26.0f), 90.0f, glm::vec3(4.8f)},
-            {glm::vec3(30.0f, 6.8f, -20.0f), 90.0f, glm::vec3(4.8f)}
+            {glm::vec3(30.0f, 6.6f, -26.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(30.0f, 6.6f, -20.0f), 90.0f, glm::vec3(4.8f)}
         },
         {
             {glm::vec3(35.0f, 5.7f, -10.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
             {glm::vec3(35.0f, 9.1f, -14.0f), 90.0f, glm::vec3(5.5f)},
             {glm::vec3(35.0f, 9.1f, -8.0f), 90.0f, glm::vec3(5.5f)},
-            {glm::vec3(30.0f, 6.8f, -14.0f), 90.0f, glm::vec3(4.8f)},
-            {glm::vec3(30.0f, 6.8f, -8.0f), 90.0f, glm::vec3(4.8f)}
+            {glm::vec3(30.0f, 6.6f, -14.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(30.0f, 6.6f, -8.0f), 90.0f, glm::vec3(4.8f)}
         },
 
         // Fila 1 (derecha)
         {
-            {glm::vec3(-25.0f, 5.7f, 18.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
+            {glm::vec3(-25.0f, 5.7f, 12.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
+            {glm::vec3(-25.0f, 9.1f, 9.0f), 90.0f, glm::vec3(5.5f)},
             {glm::vec3(-25.0f, 9.1f, 15.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(-30.0f, 6.6f, 9.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(-30.0f, 6.6f, 15.0f), 90.0f, glm::vec3(4.8f)}
+        },
+        {
+            {glm::vec3(-25.0f, 5.7f, 25.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
             {glm::vec3(-25.0f, 9.1f, 21.0f), 90.0f, glm::vec3(5.5f)},
-            {glm::vec3(-30.0f, 6.8f, 15.0f), 90.0f, glm::vec3(4.8f)},
-            {glm::vec3(-30.0f, 6.8f, 21.0f), 90.0f, glm::vec3(4.8f)}
-        },
-        {
-            {glm::vec3(-25.0f, 5.7f, 31.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
             {glm::vec3(-25.0f, 9.1f, 27.0f), 90.0f, glm::vec3(5.5f)},
-            {glm::vec3(-25.0f, 9.1f, 33.0f), 90.0f, glm::vec3(5.5f)},
-            {glm::vec3(-30.0f, 6.8f, 27.0f), 90.0f, glm::vec3(4.8f)},
-            {glm::vec3(-30.0f, 6.8f, 33.0f), 90.0f, glm::vec3(4.8f)}
+            {glm::vec3(-30.0f, 6.6f, 21.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(-30.0f, 6.6f, 27.0f), 90.0f, glm::vec3(4.8f)}
         },
 
-        // Fila 2 (derecha)
+        // Fila 2 (izquierda)
         {
-            {glm::vec3(-10.0f, 5.7f, 18.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
+            {glm::vec3(-10.0f, 5.7f, 12.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
+            {glm::vec3(-10.0f, 9.1f, 9.0f), 90.0f, glm::vec3(5.5f)},
             {glm::vec3(-10.0f, 9.1f, 15.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(-15.0f, 6.6f, 9.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(-15.0f, 6.6f, 15.0f), 90.0f, glm::vec3(4.8f)}
+        },
+        {
+            {glm::vec3(-10.0f, 5.7f, 25.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
             {glm::vec3(-10.0f, 9.1f, 21.0f), 90.0f, glm::vec3(5.5f)},
-            {glm::vec3(-15.0f, 6.8f, 15.0f), 90.0f, glm::vec3(4.8f)},
-            {glm::vec3(-15.0f, 6.8f, 21.0f), 90.0f, glm::vec3(4.8f)}
-        },
-        {
-            {glm::vec3(-10.0f, 5.7f, 31.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
             {glm::vec3(-10.0f, 9.1f, 27.0f), 90.0f, glm::vec3(5.5f)},
-            {glm::vec3(-10.0f, 9.1f, 33.0f), 90.0f, glm::vec3(5.5f)},
-            {glm::vec3(-15.0f, 6.8f, 27.0f), 90.0f, glm::vec3(4.8f)},
-            {glm::vec3(-15.0f, 6.8f, 33.0f), 90.0f, glm::vec3(4.8f)}
+            {glm::vec3(-15.0f, 6.6f, 21.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(-15.0f, 6.6f, 27.0f), 90.0f, glm::vec3(4.8f)}
         },
 
-        // Fila 3 (derecha)
+        // Fila 3 (izquierda)
         {
-            {glm::vec3(5.0f, 5.7f, 18.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
+            {glm::vec3(5.0f, 5.7f, 12.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
+            {glm::vec3(5.0f, 9.1f, 9.0f), 90.0f, glm::vec3(5.5f)},
             {glm::vec3(5.0f, 9.1f, 15.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(0.0f, 6.6f, 9.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(0.0f, 6.6f, 15.0f), 90.0f, glm::vec3(4.8f)}
+        },
+        {
+            {glm::vec3(5.0f, 5.7f, 25.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
             {glm::vec3(5.0f, 9.1f, 21.0f), 90.0f, glm::vec3(5.5f)},
-            {glm::vec3(0.0f, 6.8f, 15.0f), 90.0f, glm::vec3(4.8f)},
-            {glm::vec3(0.0f, 6.8f, 21.0f), 90.0f, glm::vec3(4.8f)}
-        },
-        {
-            {glm::vec3(5.0f, 5.7f, 31.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
             {glm::vec3(5.0f, 9.1f, 27.0f), 90.0f, glm::vec3(5.5f)},
-            {glm::vec3(5.0f, 9.1f, 33.0f), 90.0f, glm::vec3(5.5f)},
-            {glm::vec3(0.0f, 6.8f, 27.0f), 90.0f, glm::vec3(4.8f)},
-            {glm::vec3(0.0f, 6.8f, 33.0f), 90.0f, glm::vec3(4.8f)}
+            {glm::vec3(0.0f, 6.6f, 21.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(0.0f, 6.6f, 27.0f), 90.0f, glm::vec3(4.8f)}
         },
 
-        // Fila 4 (derecha)
+        // Fila 4 (izquierda)
         {
-            {glm::vec3(20.0f, 5.7f, 18.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
+            {glm::vec3(20.0f, 5.7f, 12.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
+            {glm::vec3(20.0f, 9.1f, 9.0f), 90.0f, glm::vec3(5.5f)},
             {glm::vec3(20.0f, 9.1f, 15.0f), 90.0f, glm::vec3(5.5f)},
-            {glm::vec3(20.0f, 9.1f, 21.0f), 90.0f, glm::vec3(5.5f)},
-            {glm::vec3(15.0f, 6.8f, 15.0f), 90.0f, glm::vec3(4.8f)},
-            {glm::vec3(15.0f, 6.8f, 21.0f), 90.0f, glm::vec3(4.8f)}
+            {glm::vec3(15.0f, 6.6f, 9.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(15.0f, 6.6f, 15.0f), 90.0f, glm::vec3(4.8f)}
         },
         {
-            {glm::vec3(20.0f, 5.7f, 31.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
+            {glm::vec3(20.0f, 5.7f, 25.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
+            {glm::vec3(20.0f, 9.1f, 21.0f), 90.0f, glm::vec3(5.5f)},
             {glm::vec3(20.0f, 9.1f, 27.0f), 90.0f, glm::vec3(5.5f)},
-            {glm::vec3(20.0f, 9.1f, 33.0f), 90.0f, glm::vec3(5.5f)},
-            {glm::vec3(15.0f, 6.8f, 27.0f), 90.0f, glm::vec3(4.8f)},
-            {glm::vec3(15.0f, 6.8f, 33.0f), 90.0f, glm::vec3(4.8f)}
+            {glm::vec3(15.0f, 6.6f, 21.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(15.0f, 6.6f, 27.0f), 90.0f, glm::vec3(4.8f)}
         },
 
-        // Fila 5 (derecha)
+        // Fila 5 (izquierda)
         {
-            {glm::vec3(35.0f, 5.7f, 18.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
+            {glm::vec3(35.0f, 5.7f, 12.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
+            {glm::vec3(35.0f, 9.1f, 9.0f), 90.0f, glm::vec3(5.5f)},
             {glm::vec3(35.0f, 9.1f, 15.0f), 90.0f, glm::vec3(5.5f)},
-            {glm::vec3(35.0f, 9.1f, 21.0f), 90.0f, glm::vec3(5.5f)},
-            {glm::vec3(30.0f, 6.8f, 15.0f), 90.0f, glm::vec3(4.8f)},
-            {glm::vec3(30.0f, 6.8f, 21.0f), 90.0f, glm::vec3(4.8f)}
+            {glm::vec3(30.0f, 6.6f, 9.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(30.0f, 6.6f, 15.0f), 90.0f, glm::vec3(4.8f)}
         },
         {
-            {glm::vec3(35.0f, 5.7f, 31.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
+            {glm::vec3(35.0f, 5.7f, 25.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
+            {glm::vec3(35.0f, 9.1f, 21.0f), 90.0f, glm::vec3(5.5f)},
             {glm::vec3(35.0f, 9.1f, 27.0f), 90.0f, glm::vec3(5.5f)},
-            {glm::vec3(35.0f, 9.1f, 33.0f), 90.0f, glm::vec3(5.5f)},
-            {glm::vec3(30.0f, 6.8f, 27.0f), 90.0f, glm::vec3(4.8f)},
-            {glm::vec3(30.0f, 6.8f, 33.0f), 90.0f, glm::vec3(4.8f)}
-        }
+            {glm::vec3(30.0f, 6.6f, 21.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(30.0f, 6.6f, 27.0f), 90.0f, glm::vec3(4.8f)}
+        },
+
     };
 
     // Configuración de paredes
     std::vector<ModelInstance> walls = {
-        {glm::vec3(10.0f, 17.0f, -30.7f), 90.0f, glm::vec3(144.0f, 30.0f, 3.0f)},
-        {glm::vec3(75.0f, 17.0f,  38.0f), 90.0f, glm::vec3(13.0f,  30.0f, 17.0f)},
-        {glm::vec3(16.0f, 17.0f,  38.0f), 90.0f, glm::vec3(4.0f,  30.0f, 17.0f)},
-        {glm::vec3(-47.0f,17.0f,  38.0f), 90.0f, glm::vec3(31.5f,  30.0f, 17.0f)},
-        {glm::vec3(30.0f,  7.0f,  45.0f), 90.0f, glm::vec3(125.2f,  9.2f,  5.0f)},
-        {glm::vec3(1.0f, 17.0f, -82.3f),  0.0f, glm::vec3(63.0f, 30.0f,  3.0f)},
-        {glm::vec3(8.9f,17.0f,   61.0f),  0.0f, glm::vec3(43.3f, 30.0f,  3.0f)}
+        {glm::vec3(4.0f, 17.0f, -30.7f), 90.0f, glm::vec3(116.0f, 30.0f, 3.0f)},   //Pared izquierda
+        {glm::vec3(55.0f, 17.0f,  34.0f), 90.0f, glm::vec3(15.0f,  30.0f, 7.0f)},  //Pared derecha 1
+        {glm::vec3(16.0f, 17.0f,  34.0f), 90.0f, glm::vec3(4.0f,   30.0f, 7.0f)},   //Pared derecha 2
+        {glm::vec3(-42.5f,17.0f,  34.0f), 90.0f, glm::vec3(23.0f,  30.0f, 7.0f)},  //Pared derecha 3
+        {glm::vec3(8.5f,  7.0f,   36.0f), 90.0f, glm::vec3(80.2f,  9.2f,  3.0f)},  //Pared derecha 4
+        //{glm::vec3(1.0f,  17.0f, -60.3f),  0.0f, glm::vec3(63.0f,  30.0f,  3.0f)},    //Pared frontal
+        {glm::vec3(8.9f,  17.0f,  52.0f),  0.0f, glm::vec3(43.3f,  30.0f,  3.0f)}     //Pared trasera
     };
 
     // Configuración de ventanas
     std::vector<ModelInstance> windows = {
-        {glm::vec3(37.4f, 19.5f, -42.0f), 0.0f, glm::vec3(40.7f, 20.7f, 50.7f)},
-        {glm::vec3(37.4f, 19.5f,  11.0f), 0.0f, glm::vec3(40.7f, 20.7f, 50.7f)}
+        {glm::vec3(33.4f, 19.5f, -33.0f), 0.0f, glm::vec3(20.7f, 20.7f, 30.5f)},
+        {glm::vec3(33.4f, 19.5f,  8.5f), 0.0f, glm::vec3(20.7f, 20.7f, 45.7f)}
     };
 
     // Mesas adicionales
-    ModelInstance teacherDesk = { glm::vec3(50.0f, 5.7f, -20.0f), 90.0f, glm::vec3(10.0f,10.0f,18.0f) };
-    ModelInstance additionalDesk = { glm::vec3(-10.0f,5.7f, 20.0f),  90.0f, glm::vec3(10.0f,10.0f,18.0f) };
+    ModelInstance teacherDesk = { glm::vec3(45.0f, 5.7f, -20.0f), 90.0f, glm::vec3(10.0f,10.0f,18.0f) };
+    ModelInstance additionalDesk = { glm::vec3(-40.0f,6.4f, 20.0f),  90.0f, glm::vec3(10.0f,10.0f,18.0f) };
 
     // Inicializar animaciones de componentes
     components = {
@@ -543,19 +544,19 @@ int main() {
         glm::vec3(0.4f, 30.0f, -15.5f)),
         glm::vec3(40.7f, 42.7f, 00.7f));
     const glm::mat4 ceilingTransform = glm::scale(glm::translate(glm::mat4(1.0f),
-        glm::vec3(0.4f, 30.0f, -15.5f)),
-        glm::vec3(60.7f, 5.7f, 150.7f));
+        glm::vec3(2.4f, 30.0f, -4.0f)),
+        glm::vec3(68.7f, 5.7f, 114.7f));
     const glm::mat4 floorTransform = glm::scale(glm::translate(
         glm::rotate(glm::mat4(1.0f),
             glm::radians(90.0f),
-            glm::vec3(0.0f, 0.0f, 1.0f)),
-        glm::vec3(2.2f, -5.0f, -10.5f)),
-        glm::vec3(60.7f, 110.7f, 145.7f));//145.7f
+            glm::vec3(0.0f, 0.0f, 1.0f)), //Rotate
+        glm::vec3(3.0f, -2.7f, -4.0f)), //Translate
+        glm::vec3(60.7f, 90.7f, 115.7f));//145.7f Scale
     const glm::mat4 boardTransform = glm::scale(glm::translate(glm::mat4(1.0f),
-        glm::vec3(1.0f, 10.0f, -80.0f)),
+        glm::vec3(1.0f, 10.0f, -58.0f)),
         glm::vec3(30.0f, 14.0f, 25.0f));
     const glm::mat4 frontWallTransform = glm::scale(glm::translate(glm::mat4(1.0f),
-        glm::vec3(1.0f, 17.0f, -82.3f)),
+        glm::vec3(1.0f, 17.0f, -60.3f)),
         glm::vec3(63.0f, 30.0f, 3.0f));
 
     // Bucle principal
