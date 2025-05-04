@@ -11,7 +11,7 @@
 #include "SOIL2/SOIL2.h"
 #include "stb_image.h"
 
-const GLuint WIDTH = 800, HEIGHT = 600;
+const GLuint WIDTH = 1200, HEIGHT = 900;
 int SCREEN_WIDTH, SCREEN_HEIGHT;
 
 void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode);
@@ -26,9 +26,8 @@ bool firstMouse = true;
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
 
-<<<<<<< Updated upstream
-// Estructura para configurar instancias de modelos
-=======
+bool showComputer = false; // Variable para controlar la visibilidad
+
 // Variables para la animación
 float globalAnimationTime = -1.0f;
 bool animationPlaying = false;
@@ -112,95 +111,75 @@ Keyframe GetCurrentKeyframe(const ComputerComponent& component, float currentTim
 void UpdateAnimations(float currentTime) {
     if (!animationPlaying) return;
 
-    if (currentTime < 0.0f) {
+    if (currentTime < 0.0f) { // Inicializar
         globalAnimationTime = 0.0f;
-        // Reiniciar todos los componentes
         for (auto& comp : components) {
             comp.isAnimating = false;
             comp.hasAnimated = false;
         }
-        // Empezar solo el primero
         if (!components.empty()) {
-            components[0].isAnimating = true;
+            components[0].isAnimating = true; // Solo el primer componente inicia
             components[0].animationStartTime = 0.0f;
         }
         return;
     }
 
-    globalAnimationTime += deltaTime * animationSpeed;
+    globalAnimationTime += deltaTime * (animationSpeed * 0.5f); // Velocidad reducida al 50%
 
-    // Controlar la secuencia de animación componente por componente
+    // Lógica de secuencia: un componente termina antes que empiece el siguiente
     for (size_t i = 0; i < components.size(); ++i) {
         if (!components[i].hasAnimated) {
-            // Si es el primer componente o el anterior ya terminó
-            if (!components[i].isAnimating &&
-                (i == 0 || components[i - 1].hasAnimated))
-            {
+            if (i == 0) {
+                if (!components[i].isAnimating) {
+                    components[i].isAnimating = true;
+                    components[i].animationStartTime = globalAnimationTime;
+                }
+            }
+            else if (components[i - 1].hasAnimated && !components[i].isAnimating) {
                 components[i].isAnimating = true;
                 components[i].animationStartTime = globalAnimationTime;
             }
-            break;
+            break; // Solo un componente se anima a la vez
         }
     }
 
-    // Verificar si todos han terminado
-    bool allDone = true;
-    for (auto& comp : components) {
-        if (!comp.hasAnimated) {
-            allDone = false;
-            break;
-        }
-    }
-
-    if (allDone) {
-        animationPlaying = false;
-    }
+    // Verificar si todos terminaron
+    animationPlaying = std::any_of(components.begin(), components.end(),
+        [](const ComputerComponent& c) { return !c.hasAnimated; });
 }
 
-std::vector<Keyframe> CreateRandomRotationKeyframes(
-    const glm::vec3& finalPos,
-    const glm::vec3& finalScale,
+std::vector<Keyframe> CreateComponentOrbitKeyframes(
+    const glm::vec3& finalPos,  // Posición final original (no se usa directamente)
+    const glm::vec3& finalScale, // Escala original (no se modifica)
     float duration)
 {
     std::vector<Keyframe> kfs;
+    const float orbitRadius = 2.0f; // Radio fijo de 2 unidades
 
-    // Generar valores aleatorios para la animación
-    float randomRotation = static_cast<float>(rand() % 1080); // Hasta 3 vueltas completas
-    float direction = (rand() % 2) ? 1.0f : -1.0f;
-    randomRotation *= direction;
+    // Ángulo aleatorio inicial para variar la dirección de órbita
+    float randomStartAngle = static_cast<float>(rand() % 360);
+    float rotationDirection = (rand() % 2) ? 1.0f : -1.0f; // Sentido horario/antihorario
 
-    // Generar ángulo inicial aleatorio para la órbita
-    float orbitAngle = static_cast<float>(rand() % 360);
+    // Keyframe 0: Inicia en posición orbital (offset desde el centro)
+    glm::vec3 orbitOffset = glm::vec3(
+        orbitRadius * sin(glm::radians(randomStartAngle)),
+        0.0f,
+        orbitRadius * cos(glm::radians(randomStartAngle))
+    );
+    kfs.push_back({ 0.0f, orbitOffset, 0.0f, glm::vec3(1.0f) }); // Escala 1.0 (neutral)
 
-    // Keyframe inicial (posición original)
-    kfs.push_back({ 0.0f, finalPos, 0.0f, finalScale });
+    // Keyframe 1: Mitad de la órbita (180°)
+    float midAngle = randomStartAngle + 180.0f * rotationDirection;
+    orbitOffset = glm::vec3(
+        orbitRadius * sin(glm::radians(midAngle)),
+        0.0f,
+        orbitRadius * cos(glm::radians(midAngle))
+    );
+    kfs.push_back({ duration * 0.5f, orbitOffset, 180.0f * rotationDirection, glm::vec3(1.0f) });
 
-    // Puntos intermedios con movimiento orbital
-    for (int i = 1; i <= 5; ++i) {
-        float progress = i * 0.2f;
-        float currentOrbitAngle = orbitAngle + 360.0f * progress;
-
-        // Calcular posición orbital (radio de 2 unidades)
-        glm::vec3 orbitPos = finalPos + glm::vec3(
-            2.0f * sin(glm::radians(currentOrbitAngle)),
-            0.0f,
-            2.0f * cos(glm::radians(currentOrbitAngle))
-        );
-
-        kfs.push_back({
-            duration * progress,
-            orbitPos,
-            randomRotation * progress,
-            finalScale
-            });
-    }
-
-    // Final suavizado a posición original
-    kfs.push_back({ duration * 0.9f,
-                   finalPos + glm::vec3(0.5f * sin(glm::radians(orbitAngle + 324.0f)), 0.0f, 0.5f * cos(glm::radians(orbitAngle + 324.0f))),
-                   randomRotation * 0.9f,
-                   finalScale });
-    kfs.push_back({ duration, finalPos, 0.0f, finalScale });
+    // Keyframe 2: Completa la órbita (360°) y vuelve al centro
+    kfs.push_back({ duration * 0.8f, orbitOffset * 0.3f, 270.0f * rotationDirection, glm::vec3(1.0f) }); // Suavizado
+    kfs.push_back({ duration, glm::vec3(0.0f), 0.0f, glm::vec3(1.0f) }); // Centro exacto
 
     return kfs;
 }
@@ -210,51 +189,43 @@ void RenderComponent(Shader& shader,
     float currentTime,
     const glm::mat4& parentTransform)
 {
+    if (!component.isAnimating && !component.hasAnimated) return;
+
     Keyframe cf = GetCurrentKeyframe(component, currentTime);
 
-    // Matriz de transformación con rotación y posición orbital
-    glm::mat4 localM = glm::mat4(1.0f);
-    localM = glm::translate(localM, cf.position); // Posición orbital
-    localM = glm::rotate(localM, glm::radians(cf.rotation), glm::vec3(0.0f, 1.0f, 0.0f)); // Rotación propia
+    // 1. Matriz base (transformación padre: posición/escala/rotación original)
+    glm::mat4 modelMatrix = parentTransform;
 
-    // Matriz final
-    glm::mat4 modelMatrix = parentTransform * localM;
+    // 2. Aplicar offset orbital (traslación relativa)
+    modelMatrix = glm::translate(modelMatrix, cf.position);
+
+    // 3. Rotación durante la órbita (sobre su propio eje)
+    modelMatrix = glm::rotate(modelMatrix, glm::radians(cf.rotation), glm::vec3(0.0f, 1.0f, 0.0f));
+
+    // Enviar matriz al shader
     glUniformMatrix4fv(
         glGetUniformLocation(shader.Program, "model"),
         1, GL_FALSE, glm::value_ptr(modelMatrix)
     );
 
-    // Animación de color para resaltar el componente activo
-    float progress = glm::clamp(
-        (currentTime - component.animationStartTime) / component.animationDuration,
-        0.0f, 1.0f
-    );
-
+    // Efecto visual (opcional: resaltar componente activo)
     if (component.isAnimating) {
-        // Color que cambia durante la animación
-        glm::vec3 animColor(
-            0.5f + 0.5f * sin(progress * 3.1416f),
-            0.5f - 0.5f * cos(progress * 3.1416f),
-            0.7f
-        );
+        float progress = (currentTime - component.animationStartTime) / component.animationDuration;
         glUniform3f(
-            glGetUniformLocation(shader.Program, "material.diffuse"),
-            animColor.r, animColor.g, animColor.b
+            glGetUniformLocation(shader.Program, "material.emissive"),
+            progress, progress * 0.5f, 0.0f // Brillo anaranjado
         );
     }
 
     component.model->Draw(shader);
 
-    // Restaurar color original
+    // Restaurar valores
     if (component.isAnimating) {
-        glUniform3f(
-            glGetUniformLocation(shader.Program, "material.diffuse"),
-            1.0f, 1.0f, 1.0f
-        );
+        glUniform3f(glGetUniformLocation(shader.Program, "material.emissive"), 0.0f, 0.0f, 0.0f);
     }
 
-    // Marcar como completado cuando termine
-    if (progress >= 1.0f) {
+    // Actualizar estado al finalizar
+    if (component.isAnimating && (currentTime - component.animationStartTime) >= component.animationDuration) {
         component.isAnimating = false;
         component.hasAnimated = true;
     }
@@ -272,27 +243,30 @@ void RenderComputer(Shader& shader,
 }
 
 // Estructuras para el resto de la escena
->>>>>>> Stashed changes
 struct ModelInstance {
     glm::vec3 position;
     float rotationY;
     glm::vec3 scale;
 };
 
-// Estructura para configurar puestos de trabajo (mesa + CPU + silla)
 struct Workstation {
     ModelInstance desk;
-    ModelInstance cpu;
-    ModelInstance chair;
+    ModelInstance cpu1;
+    ModelInstance cpu2;
+    ModelInstance chair1;
+    ModelInstance chair2;
 };
 
 // Función para renderizar una instancia de modelo
-void RenderInstance(Shader& shader, Model& model, const ModelInstance& instance) {
-    glm::mat4 modelMatrix = glm::mat4(1.0f);
-    modelMatrix = glm::rotate(modelMatrix, glm::radians(instance.rotationY), glm::vec3(0.0f, 1.0f, 0.0f));
-    modelMatrix = glm::translate(modelMatrix, instance.position);
-    modelMatrix = glm::scale(modelMatrix, instance.scale);
-    glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(modelMatrix));
+void RenderInstance(Shader& shader, Model& model, const ModelInstance& ins) {
+    glm::mat4 M(1.0f);
+    M = glm::rotate(M, glm::radians(ins.rotationY), glm::vec3(0.0f, 1.0f, 0.0f));
+    M = glm::translate(M, ins.position);
+    M = glm::scale(M, ins.scale);
+    glUniformMatrix4fv(
+        glGetUniformLocation(shader.Program, "model"),
+        1, GL_FALSE, glm::value_ptr(M)
+    );
     model.Draw(shader);
 }
 
@@ -327,25 +301,21 @@ int main() {
 
     Shader shader("Shader/lighting.vs", "Shader/lighting.frag");
     Shader shadowShader("Shader/shadow.vs", "Shader/shadow.frag");
-    //Shader lightingShader("Shader/lighting.vs", "Shader/lighting.frag");
     Shader lampShader("Shader/lamp.vs", "Shader/lamp.frag");
 
-    Model piso((char*)"Models/Proyecto/piso/piso.obj"); // Cargar modelo del piso
-    Model pared((char*)"Models/Proyecto/Pared/tripo_pbr_model_01b89d8b-a342-4896-89aa-fe20ab730130.obj"); // Cargar modelo de pared
-    Model techoo((char*)"Models/Proyecto/piso1/piso.obj");   // Cargar modelo del techo
-    Model lampara((char*)"Models/Proyecto/lampled/lampled.obj"); // Cargar modelo de lámpara
-    Model pizarron((char*)"Models/Proyecto/pizarron/pizarron.obj"); // Cargar modelo del pizarrón
-    Model cpu((char*)"Models/Proyecto/computadora/computadora.obj"); // Cargar modelo de computadora
-    Model silla((char*)"Models/Proyecto/silla/silla.obj"); // Cargar modelo de silla
-    Model mesa((char*)"Models/Proyecto/mesa/mesa.obj");   // Cargar modelo de mesa
-    Model ventanas((char*)"Models/Proyecto/ventana/ventana.obj");   // Cargar modelo de ventana
-
-<<<<<<< Updated upstream
-    // Configurar puestos de trabajo (mesa, cpu, silla)
-=======
-    //Cargar modelos de la nave
-    Model Nave((char*)"Models/nave_espacial/nave_espacial.obj");
-    Model Rayo((char*)"Models/rayo_laser/Rayo45.obj");
+    // Cargar modelos de la escena
+    Model piso((char*)"Models/Proyecto/piso/piso.obj");
+    Model pared((char*)"Models/Proyecto/Pared/pared.obj");
+    Model techoo((char*)"Models/Proyecto/piso1/piso.obj");
+    Model lampara((char*)"Models/Proyecto/lampled/lampled.obj");
+    Model pizarron((char*)"Models/Proyecto/pizarron/pizarron.obj");
+    Model cpu((char*)"Models/Proyecto/computadora/computadora.obj");
+    Model silla((char*)"Models/Proyecto/silla/silla.obj");
+    Model mesa((char*)"Models/Proyecto/mesa/mesa.obj");
+    Model ventanas((char*)"Models/Proyecto/ventana/ventana.obj");
+	//Nave espacial
+    Model Nave((char*)"Models/Proyecto/nave_espacial/nave_espacial.obj");
+    Model Rayo((char*)"Models/Proyecto/rayo_laser/Rayo45.obj");
 
     // Cargar componentes de computadora (animables)
     Model gabinete((char*)"Models/Proyecto/gabinete/gabinete.obj");
@@ -361,150 +331,224 @@ int main() {
     Model teclado((char*)"Models/Proyecto/teclado/teclado.obj");
 
     // Configurar puestos de trabajo
->>>>>>> Stashed changes
     std::vector<Workstation> workstations = {
         // Fila 1 (izquierda)
         {
-            {glm::vec3(-25.0f, 5.7f, -23.0f), 90.0f, glm::vec3(10.0f)}, // mesa
-            {glm::vec3(26.0f, 10.6f, 20.0f), -95.0f, glm::vec3(8.0f)},  // cpu
-            {glm::vec3(-29.0f, 6.8f, -23.0f), 90.0f, glm::vec3(7.8f)}   // silla
+            {glm::vec3(-25.0f, 5.7f, -23.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
+            {glm::vec3(-25.0f, 9.1f, -26.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(-25.0f, 9.1f, -20.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(-30.0f, 6.6f, -26.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(-30.0f, 6.6f, -20.0f), 90.0f, glm::vec3(4.8f)}
         },
         {
-            {glm::vec3(-25.0f, 5.7f, -13.0f), 90.0f, glm::vec3(10.0f)},
-            {glm::vec3(25.5f, 10.6f, 11.0f), -95.0f, glm::vec3(8.0f)},
-            {glm::vec3(-29.0f, 6.8f, -13.0f), 90.0f, glm::vec3(7.8f)}
+            {glm::vec3(-25.0f, 5.7f, -10.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
+            {glm::vec3(-25.0f, 9.1f, -14.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(-25.0f, 9.1f, -8.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(-30.0f, 6.6f, -14.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(-30.0f, 6.6f, -8.0f), 90.0f, glm::vec3(4.8f)}
         },
-        // Fila 2
+
+        // Fila 2 (izquierda)
         {
-            {glm::vec3(-25.0f, 5.7f, 13.0f), 90.0f, glm::vec3(10.0f)},
-            {glm::vec3(23.8f, 10.6f, -16.0f), -95.0f, glm::vec3(8.0f)},
-            {glm::vec3(-29.0f, 6.8f, 13.0f), 90.0f, glm::vec3(7.8f)}
-        },
-        {
-            {glm::vec3(-25.0f, 5.7f, 23.0f), 90.0f, glm::vec3(10.0f)},
-            {glm::vec3(22.8f, 10.6f, -25.0f), -95.0f, glm::vec3(8.0f)},
-            {glm::vec3(-29.0f, 6.8f, 23.0f), 90.0f, glm::vec3(7.8f)}
-        },
-        // Fila 3 (centro)
-        {
-            {glm::vec3(-6.0f, 5.7f, 23.0f), 90.0f, glm::vec3(10.0f)},
-            {glm::vec3(3.8f, 10.6f, -23.0f), -95.0f, glm::vec3(8.0f)},
-            {glm::vec3(-10.0f, 6.8f, 23.0f), 90.0f, glm::vec3(7.8f)}
+            {glm::vec3(-10.0f, 5.7f, -23.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
+            {glm::vec3(-10.0f, 9.1f, -26.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(-10.0f, 9.1f, -20.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(-15.0f, 6.6f, -26.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(-15.0f, 6.6f, -20.0f), 90.0f, glm::vec3(4.8f)}
         },
         {
-            {glm::vec3(-6.0f, 5.7f, 13.0f), 90.0f, glm::vec3(10.0f)},
-            {glm::vec3(3.8f, 10.6f, -13.0f), -95.0f, glm::vec3(8.0f)},
-            {glm::vec3(-10.0f, 6.8f, 13.0f), 90.0f, glm::vec3(7.8f)}
+            {glm::vec3(-10.0f, 5.7f, -10.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
+            {glm::vec3(-10.0f, 9.1f, -14.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(-10.0f, 9.1f, -8.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(-15.0f, 6.6f, -14.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(-15.0f, 6.6f, -8.0f), 90.0f, glm::vec3(4.8f)}
+        },
+
+        // Fila 3 (izquierda)
+        {
+            {glm::vec3(5.0f, 5.7f, -23.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
+            {glm::vec3(5.0f, 9.1f, -26.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(5.0f, 9.1f, -20.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(0.0f, 6.6f, -26.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(0.0f, 6.6f, -20.0f), 90.0f, glm::vec3(4.8f)}
         },
         {
-            {glm::vec3(-6.0f, 5.7f, -13.0f), 90.0f, glm::vec3(10.0f)},
-            {glm::vec3(6.8f, 10.6f, 13.0f), -95.0f, glm::vec3(8.0f)},
-            {glm::vec3(-10.0f, 6.8f, -13.0f), 90.0f, glm::vec3(7.8f)}
+            {glm::vec3(5.0f, 5.7f, -10.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
+            {glm::vec3(5.0f, 9.1f, -14.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(5.0f, 9.1f, -8.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(0.0f, 6.6f, -14.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(0.0f, 6.6f, -8.0f), 90.0f, glm::vec3(4.8f)}
+        },
+
+        // Fila 4 (izquierda)
+        {
+            {glm::vec3(20.0f, 5.7f, -23.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
+            {glm::vec3(20.0f, 9.1f, -26.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(20.0f, 9.1f, -20.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(15.0f, 6.6f, -26.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(15.0f, 6.6f, -20.0f), 90.0f, glm::vec3(4.8f)}
         },
         {
-            {glm::vec3(-6.0f, 5.7f, -23.0f), 90.0f, glm::vec3(10.0f)},
-            {glm::vec3(7.5f, 10.6f, 23.0f), -95.0f, glm::vec3(8.0f)},
-            {glm::vec3(-10.0f, 6.8f, -23.0f), 90.0f, glm::vec3(7.8f)}
+            {glm::vec3(20.0f, 5.7f, -10.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
+            {glm::vec3(20.0f, 9.1f, -14.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(20.0f, 9.1f, -8.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(15.0f, 6.6f, -14.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(15.0f, 6.6f, -8.0f), 90.0f, glm::vec3(4.8f)}
         },
-        // Fila 4 (derecha)
+
+        // Fila 5 (izquierda)
         {
-            {glm::vec3(13.0f, 5.7f, -13.0f), 90.0f, glm::vec3(10.0f)},
-            {glm::vec3(-11.5f, 10.6f, 25.0f), -95.0f, glm::vec3(8.0f)},
-            {glm::vec3(9.0f, 6.8f, -13.0f), 90.0f, glm::vec3(7.8f)}
-        },
-        {
-            {glm::vec3(13.0f, 5.7f, -23.0f), 90.0f, glm::vec3(10.0f)},
-            {glm::vec3(-11.5f, 10.6f, 15.0f), -95.0f, glm::vec3(8.0f)},
-            {glm::vec3(9.0f, 6.8f, -23.0f), 90.0f, glm::vec3(7.8f)}
-        },
-        {
-            {glm::vec3(13.0f, 5.7f, 13.0f), 90.0f, glm::vec3(10.0f)},
-            {glm::vec3(-15.0f, 10.6f, -11.0f), -95.0f, glm::vec3(8.0f)},
-            {glm::vec3(9.0f, 6.8f, 13.0f), 90.0f, glm::vec3(7.8f)}
+            {glm::vec3(35.0f, 5.7f, -23.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
+            {glm::vec3(35.0f, 9.1f, -26.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(35.0f, 9.1f, -20.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(30.0f, 6.6f, -26.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(30.0f, 6.6f, -20.0f), 90.0f, glm::vec3(4.8f)}
         },
         {
-            {glm::vec3(13.0f, 5.7f, 23.0f), 90.0f, glm::vec3(10.0f)},
-            {glm::vec3(-15.0f, 10.6f, -21.0f), -95.0f, glm::vec3(8.0f)},
-            {glm::vec3(9.0f, 6.8f, 23.0f), 90.0f, glm::vec3(7.8f)}
+            {glm::vec3(35.0f, 5.7f, -10.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
+            {glm::vec3(35.0f, 9.1f, -14.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(35.0f, 9.1f, -8.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(30.0f, 6.6f, -14.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(30.0f, 6.6f, -8.0f), 90.0f, glm::vec3(4.8f)}
         },
-        // Fila 5 (fondo derecho)
+
+        // Fila 1 (derecha)
         {
-            {glm::vec3(32.0f, 5.7f, 23.0f), 90.0f, glm::vec3(10.0f)},
-            {glm::vec3(-33.0f, 10.6f, -21.0f), -95.0f, glm::vec3(8.0f)},
-            {glm::vec3(28.0f, 6.8f, 23.0f), 90.0f, glm::vec3(7.8f)}
-        },
-        {
-            {glm::vec3(32.0f, 5.7f, 13.0f), 90.0f, glm::vec3(10.0f)},
-            {glm::vec3(-33.0f, 10.6f, -11.0f), -95.0f, glm::vec3(8.0f)},
-            {glm::vec3(28.0f, 6.8f, 13.0f), 90.0f, glm::vec3(7.8f)}
-        },
-        {
-            {glm::vec3(32.0f, 5.7f, -13.0f), 90.0f, glm::vec3(10.0f)},
-            {glm::vec3(-30.5f, 10.6f, 15.0f), -95.0f, glm::vec3(8.0f)},
-            {glm::vec3(28.0f, 6.8f, -13.0f), 90.0f, glm::vec3(7.8f)}
+            {glm::vec3(-25.0f, 5.7f, 12.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
+            {glm::vec3(-25.0f, 9.1f, 9.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(-25.0f, 9.1f, 15.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(-30.0f, 6.6f, 9.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(-30.0f, 6.6f, 15.0f), 90.0f, glm::vec3(4.8f)}
         },
         {
-            {glm::vec3(32.0f, 5.7f, -23.0f), 90.0f, glm::vec3(10.0f)},
-            {glm::vec3(-30.5f, 10.6f, 25.0f), -95.0f, glm::vec3(8.0f)},
-            {glm::vec3(28.0f, 6.8f, -23.0f), 90.0f, glm::vec3(7.8f)}
+            {glm::vec3(-25.0f, 5.7f, 25.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
+            {glm::vec3(-25.0f, 9.1f, 21.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(-25.0f, 9.1f, 27.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(-30.0f, 6.6f, 21.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(-30.0f, 6.6f, 27.0f), 90.0f, glm::vec3(4.8f)}
         },
-        // Fila 6 (última fila derecha)
+
+        // Fila 2 (izquierda)
         {
-            {glm::vec3(51.0f, 5.7f, -23.0f), 90.0f, glm::vec3(10.0f)},
-            {glm::vec3(-50.0f, 10.6f, 27.0f), -95.0f, glm::vec3(8.0f)},
-            {glm::vec3(47.0f, 6.8f, -23.0f), 90.0f, glm::vec3(7.8f)}
-        },
-        {
-            {glm::vec3(51.0f, 5.7f, -13.0f), 90.0f, glm::vec3(10.0f)},
-            {glm::vec3(-50.0f, 10.6f, 17.0f), -95.0f, glm::vec3(8.0f)},
-            {glm::vec3(47.0f, 6.8f, -13.0f), 90.0f, glm::vec3(7.8f)}
-        },
-        {
-            {glm::vec3(51.0f, 5.7f, 13.0f), 90.0f, glm::vec3(10.0f)},
-            {glm::vec3(-53.0f, 10.6f, -11.0f), -95.0f, glm::vec3(8.0f)},
-            {glm::vec3(47.0f, 6.8f, 13.0f), 90.0f, glm::vec3(7.8f)}
+            {glm::vec3(-10.0f, 5.7f, 12.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
+            {glm::vec3(-10.0f, 9.1f, 9.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(-10.0f, 9.1f, 15.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(-15.0f, 6.6f, 9.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(-15.0f, 6.6f, 15.0f), 90.0f, glm::vec3(4.8f)}
         },
         {
-            {glm::vec3(51.0f, 5.7f, 23.0f), 90.0f, glm::vec3(10.0f)},
-            {glm::vec3(-53.0f, 10.6f, -19.0f), -95.0f, glm::vec3(8.0f)},
-            {glm::vec3(47.0f, 6.8f, 23.0f), 90.0f, glm::vec3(7.8f)}
-        }
+            {glm::vec3(-10.0f, 5.7f, 25.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
+            {glm::vec3(-10.0f, 9.1f, 21.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(-10.0f, 9.1f, 27.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(-15.0f, 6.6f, 21.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(-15.0f, 6.6f, 27.0f), 90.0f, glm::vec3(4.8f)}
+        },
+
+        // Fila 3 (izquierda)
+        {
+            {glm::vec3(5.0f, 5.7f, 12.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
+            {glm::vec3(5.0f, 9.1f, 9.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(5.0f, 9.1f, 15.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(0.0f, 6.6f, 9.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(0.0f, 6.6f, 15.0f), 90.0f, glm::vec3(4.8f)}
+        },
+        {
+            {glm::vec3(5.0f, 5.7f, 25.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
+            {glm::vec3(5.0f, 9.1f, 21.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(5.0f, 9.1f, 27.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(0.0f, 6.6f, 21.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(0.0f, 6.6f, 27.0f), 90.0f, glm::vec3(4.8f)}
+        },
+
+        // Fila 4 (izquierda)
+        {
+            {glm::vec3(20.0f, 5.7f, 12.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
+            {glm::vec3(20.0f, 9.1f, 9.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(20.0f, 9.1f, 15.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(15.0f, 6.6f, 9.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(15.0f, 6.6f, 15.0f), 90.0f, glm::vec3(4.8f)}
+        },
+        {
+            {glm::vec3(20.0f, 5.7f, 25.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
+            {glm::vec3(20.0f, 9.1f, 21.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(20.0f, 9.1f, 27.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(15.0f, 6.6f, 21.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(15.0f, 6.6f, 27.0f), 90.0f, glm::vec3(4.8f)}
+        },
+
+        // Fila 5 (izquierda)
+        {
+            {glm::vec3(35.0f, 5.7f, 12.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
+            {glm::vec3(35.0f, 9.1f, 9.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(35.0f, 9.1f, 15.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(30.0f, 6.6f, 9.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(30.0f, 6.6f, 15.0f), 90.0f, glm::vec3(4.8f)}
+        },
+        {
+            {glm::vec3(35.0f, 5.7f, 25.0f), 90.0f, glm::vec3(9.0f, 7.0f, 13.0f)},
+            {glm::vec3(35.0f, 9.1f, 21.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(35.0f, 9.1f, 27.0f), 90.0f, glm::vec3(5.5f)},
+            {glm::vec3(30.0f, 6.6f, 21.0f), 90.0f, glm::vec3(4.8f)},
+            {glm::vec3(30.0f, 6.6f, 27.0f), 90.0f, glm::vec3(4.8f)}
+        },
+
     };
 
     // Configuración de paredes
     std::vector<ModelInstance> walls = {
-        // Pared izquierda
-        {glm::vec3(10.0f, 17.0f, -30.7f), 90.0f, glm::vec3(144.0f, 30.0f, 3.0f)},
-        // Pared derecha 1
-        {glm::vec3(75.0f, 17.0f, 38.0f), 90.0f, glm::vec3(13.0f, 30.0f, 17.0f)},
-        // Pared derecha 2
-        {glm::vec3(16.0f, 17.0f, 38.0f), 90.0f, glm::vec3(4.0f, 30.0f, 17.0f)},
-        // Pared derecha 3
-        {glm::vec3(-47.0f, 17.0f, 38.0f), 90.0f, glm::vec3(31.5f, 30.0f, 17.0f)},
-        // Parte pared derecha
-        {glm::vec3(30.0f, 7.0f, 45.0f), 90.0f, glm::vec3(125.2f, 9.2f, 5.0f)},
-        // Pared frontal
-        {glm::vec3(1.0f, 17.0f, -82.3f), 0.0f, glm::vec3(63.0f, 30.0f, 3.0f)},
-        // Pared trasera
-        {glm::vec3(8.9f, 17.0f, 61.0f), 0.0f, glm::vec3(43.3f, 30.0f, 3.0f)}
+        {glm::vec3(4.0f, 17.0f, -30.7f), 90.0f, glm::vec3(116.0f, 30.0f, 3.0f)},   //Pared izquierda
+        {glm::vec3(55.0f, 17.0f,  34.0f), 90.0f, glm::vec3(15.0f,  30.0f, 7.0f)},  //Pared derecha 1
+        {glm::vec3(16.0f, 17.0f,  34.0f), 90.0f, glm::vec3(4.0f,   30.0f, 7.0f)},   //Pared derecha 2
+        {glm::vec3(-42.5f,17.0f,  34.0f), 90.0f, glm::vec3(23.0f,  30.0f, 7.0f)},  //Pared derecha 3
+        {glm::vec3(8.5f,  7.0f,   36.0f), 90.0f, glm::vec3(80.2f,  9.2f,  3.0f)},  //Pared derecha 4
+        //{glm::vec3(1.0f,  17.0f, -60.3f),  0.0f, glm::vec3(63.0f,  30.0f,  3.0f)},    //Pared frontal
+        {glm::vec3(8.9f,  17.0f,  52.0f),  0.0f, glm::vec3(43.3f,  30.0f,  3.0f)}     //Pared trasera
     };
 
     // Configuración de ventanas
     std::vector<ModelInstance> windows = {
-        {glm::vec3(37.4f, 19.5f, -42.0f), 0.0f, glm::vec3(40.7f, 20.7f, 50.7f)},
-        {glm::vec3(37.4f, 19.5f, 11.0f), 0.0f, glm::vec3(40.7f, 20.7f, 50.7f)}
+        {glm::vec3(33.4f, 19.5f, -33.0f), 0.0f, glm::vec3(20.7f, 20.7f, 30.5f)},
+        {glm::vec3(33.4f, 19.5f,  8.5f), 0.0f, glm::vec3(20.7f, 20.7f, 45.7f)}
     };
 
     // Configuración de mesas adicionales (solo una definición)
-    ModelInstance teacherDesk = { glm::vec3(70.0f, 5.7f, -20.0f), 90.0f, glm::vec3(10.0f, 10.0f, 18.0f) };
-    ModelInstance additionalDesk = { glm::vec3(-44.0f, 5.7f, 20.0f), 90.0f, glm::vec3(10.0f, 10.0f, 18.0f) };
+    ModelInstance teacherDesk = { glm::vec3(45.0f, 5.7f, -20.0f), 90.0f, glm::vec3(10.0f,10.0f,18.0f) };
+    ModelInstance additionalDesk = { glm::vec3(-40.0f,6.4f, 20.0f),  90.0f, glm::vec3(10.0f,10.0f,18.0f) };
 
-    // Precalcular matrices para objetos estáticos
-    const glm::mat4 lampTransform = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.4f, 30.0f, -15.5f)), glm::vec3(40.7f, 42.7f, 00.7f));
-    const glm::mat4 ceilingTransform = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.4f, 30.0f, -15.5f)), glm::vec3(60.7f, 5.7f, 150.7f));
-    const glm::mat4 floorTransform = glm::scale(glm::translate(glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)), glm::vec3(2.2f, -5.0f, -10.5f)), glm::vec3(60.7f, 110.7f, 145.7f));//145.7f
-    const glm::mat4 boardTransform = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 10.0f, -80.0f)), glm::vec3(30.0f, 14.0f, 25.0f));
-    const glm::mat4 frontWallTransform = glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 17.0f, -82.3f)), glm::vec3(63.0f, 30.0f, 3.0f));
+    // Inicializar animaciones de componentes
+    components = {
+     {&gabinete,       CreateComponentOrbitKeyframes(glm::vec3(0.0f), glm::vec3(3.0f), 1.0f), false, false, 0.0f, 1.2f},
+     {&placamadre,     CreateComponentOrbitKeyframes(glm::vec3(0.0f), glm::vec3(3.0f), 1.0f), false, false, 0.0f, 1.0f},
+     {&procesador,     CreateComponentOrbitKeyframes(glm::vec3(0.0f), glm::vec3(3.0f), 1.0f), false, false, 0.0f, 0.8f},
+     {&ram,            CreateComponentOrbitKeyframes(glm::vec3(0.0f), glm::vec3(3.0f), 1.0f), false, false, 0.0f, 0.8f},
+     {&ssd,            CreateComponentOrbitKeyframes(glm::vec3(0.0f), glm::vec3(3.0f), 1.0f), false, false, 0.0f, 0.8f},
+     {&tarjetagrafica, CreateComponentOrbitKeyframes(glm::vec3(0.0f), glm::vec3(3.0f), 1.0f), false, false, 0.0f, 1.0f},
+     {&ventilador,     CreateComponentOrbitKeyframes(glm::vec3(0.0f), glm::vec3(3.0f), 1.0f), false, false, 0.0f, 0.6f},
+     {&ventilador2,    CreateComponentOrbitKeyframes(glm::vec3(0.0f), glm::vec3(3.0f), 1.0f), false, false, 0.0f, 0.6f},
+     {&fuente,         CreateComponentOrbitKeyframes(glm::vec3(0.0f), glm::vec3(3.0f), 1.0f), false, false, 0.0f, 1.0f},
+     {&monitor,        CreateComponentOrbitKeyframes(glm::vec3(0.0f), glm::vec3(3.0f), 1.0f), false, false, 0.0f, 1.2f},
+     {&teclado,        CreateComponentOrbitKeyframes(glm::vec3(0.0f), glm::vec3(3.0f), 1.0f), false, false, 0.0f, 1.0f}
+    };
+
+    // Matrices precalculadas para objetos estáticos
+    const glm::mat4 lampTransform = glm::scale(glm::translate(glm::mat4(1.0f),
+        glm::vec3(0.4f, 30.0f, -15.5f)),
+        glm::vec3(40.7f, 42.7f, 00.7f));
+    const glm::mat4 ceilingTransform = glm::scale(glm::translate(glm::mat4(1.0f),
+        glm::vec3(2.4f, 30.0f, -4.0f)),
+        glm::vec3(68.7f, 5.7f, 114.7f));
+    const glm::mat4 floorTransform = glm::scale(glm::translate(
+        glm::rotate(glm::mat4(1.0f),
+            glm::radians(90.0f),
+            glm::vec3(0.0f, 0.0f, 1.0f)), //Rotate
+        glm::vec3(3.0f, -2.7f, -4.0f)), //Translate
+        glm::vec3(60.7f, 90.7f, 115.7f));//145.7f Scale
+    const glm::mat4 boardTransform = glm::scale(glm::translate(glm::mat4(1.0f),
+        glm::vec3(1.0f, 10.0f, -58.0f)),
+        glm::vec3(30.0f, 14.0f, 25.0f));
+    const glm::mat4 frontWallTransform = glm::scale(glm::translate(glm::mat4(1.0f),
+        glm::vec3(1.0f, 17.0f, -60.3f)),
+        glm::vec3(63.0f, 30.0f, 3.0f));
 
     while (!glfwWindowShouldClose(window)) {
         GLfloat currentFrame = static_cast<GLfloat>(glfwGetTime());
@@ -518,51 +562,94 @@ int main() {
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        shader.Use();
+        if (keys[GLFW_KEY_R]) {
+            if (!animationPlaying) {
+                showComputer = true; // Hacer visible la computadora
+                globalAnimationTime = -1.0f;
+                animationPlaying = true;
+                // Reiniciar estados de componentes
+                for (auto& comp : components) {
+                    comp.isAnimating = false;
+                    comp.hasAnimated = false;
+                }
+            }
+            keys[GLFW_KEY_R] = false;
+        }
 
-        // OpenGL options
-        glEnable(GL_DEPTH_TEST);
+        // Actualizar animaciones
+        UpdateAnimations(globalAnimationTime);
+
+        // Eventos y movimiento de cámara
+        glfwPollEvents();
+        DoMovement();
+
+        // Clear
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        shader.Use();
 
         // Configurar luces
         // Luz direccional
-        glUniform3f(glGetUniformLocation(shader.Program, "dirLight.direction"), -0.2f, -1.0f, -0.3f);
-        glUniform3f(glGetUniformLocation(shader.Program, "dirLight.ambient"), 0.5f, 0.5f, 0.5f);
-        glUniform3f(glGetUniformLocation(shader.Program, "dirLight.diffuse"), 0.8f, 0.8f, 0.8f);
-        glUniform3f(glGetUniformLocation(shader.Program, "dirLight.specular"), 0.5f, 0.5f, 0.5f);
+        glUniform3f(glGetUniformLocation(shader.Program, "dirLight.direction"),
+            -0.2f, -1.0f, -0.3f);
+        glUniform3f(glGetUniformLocation(shader.Program, "dirLight.ambient"),
+            0.5f, 0.5f, 0.5f);
+        glUniform3f(glGetUniformLocation(shader.Program, "dirLight.diffuse"),
+            0.8f, 0.8f, 0.8f);
+        glUniform3f(glGetUniformLocation(shader.Program, "dirLight.specular"),
+            0.5f, 0.5f, 0.5f);
 
         // Luz puntual (lámpara)
         glm::vec3 lightPos(0.4f, 20.0f, -10.5f);
-        glUniform3f(glGetUniformLocation(shader.Program, "pointLights[0].position"), lightPos.x, lightPos.y, lightPos.z);
-        glUniform3f(glGetUniformLocation(shader.Program, "pointLights[0].ambient"), 0.2f, 0.2f, 0.2f);
-        glUniform3f(glGetUniformLocation(shader.Program, "pointLights[0].diffuse"), 0.8f, 0.8f, 0.8f);
-        glUniform3f(glGetUniformLocation(shader.Program, "pointLights[0].specular"), 1.0f, 1.0f, 1.0f);
-        glUniform1f(glGetUniformLocation(shader.Program, "pointLights[0].constant"), 1.0f);
-        glUniform1f(glGetUniformLocation(shader.Program, "pointLights[0].linear"), 0.09f);
-        glUniform1f(glGetUniformLocation(shader.Program, "pointLights[0].quadratic"), 0.032f);
+        glUniform3f(glGetUniformLocation(shader.Program,
+            "pointLights[0].position"),
+            lightPos.x, lightPos.y, lightPos.z);
+        glUniform3f(glGetUniformLocation(shader.Program,
+            "pointLights[0].ambient"),
+            0.2f, 0.2f, 0.2f);
+        glUniform3f(glGetUniformLocation(shader.Program,
+            "pointLights[0].diffuse"),
+            0.8f, 0.8f, 0.8f);
+        glUniform3f(glGetUniformLocation(shader.Program,
+            "pointLights[0].specular"),
+            1.0f, 1.0f, 1.0f);
+        glUniform1f(glGetUniformLocation(shader.Program,
+            "pointLights[0].constant"), 1.0f);
+        glUniform1f(glGetUniformLocation(shader.Program,
+            "pointLights[0].linear"), 0.09f);
+        glUniform1f(glGetUniformLocation(shader.Program,
+            "pointLights[0].quadratic"), 0.032f);
 
-        // Spotlight (foco de cámara)
-        glUniform3f(glGetUniformLocation(shader.Program, "spotLight.position"), camera.GetPosition().x, camera.GetPosition().y, camera.GetPosition().z);
-        glUniform3f(glGetUniformLocation(shader.Program, "spotLight.direction"), camera.GetFront().x, camera.GetFront().y, camera.GetFront().z);
-        glUniform3f(glGetUniformLocation(shader.Program, "spotLight.ambient"), 0.1f, 0.1f, 0.1f);
-        glUniform3f(glGetUniformLocation(shader.Program, "spotLight.diffuse"), 0.8f, 0.8f, 0.8f);
-        glUniform3f(glGetUniformLocation(shader.Program, "spotLight.specular"), 1.0f, 1.0f, 1.0f);
+        // Spotlight (cámara)
+        glUniform3f(glGetUniformLocation(shader.Program, "spotLight.position"),
+            camera.GetPosition().x, camera.GetPosition().y,
+            camera.GetPosition().z);
+        glUniform3f(glGetUniformLocation(shader.Program, "spotLight.direction"),
+            camera.GetFront().x, camera.GetFront().y,
+            camera.GetFront().z);
+        glUniform3f(glGetUniformLocation(shader.Program, "spotLight.ambient"),
+            0.1f, 0.1f, 0.1f);
+        glUniform3f(glGetUniformLocation(shader.Program, "spotLight.diffuse"),
+            0.8f, 0.8f, 0.8f);
+        glUniform3f(glGetUniformLocation(shader.Program, "spotLight.specular"),
+            1.0f, 1.0f, 1.0f);
         glUniform1f(glGetUniformLocation(shader.Program, "spotLight.constant"), 1.0f);
         glUniform1f(glGetUniformLocation(shader.Program, "spotLight.linear"), 0.09f);
         glUniform1f(glGetUniformLocation(shader.Program, "spotLight.quadratic"), 0.032f);
-        glUniform1f(glGetUniformLocation(shader.Program, "spotLight.cutOff"), glm::cos(glm::radians(12.5f)));
-        glUniform1f(glGetUniformLocation(shader.Program, "spotLight.outerCutOff"), glm::cos(glm::radians(15.0f)));
+        glUniform1f(glGetUniformLocation(shader.Program, "spotLight.cutOff"),
+            glm::cos(glm::radians(12.5f)));
+        glUniform1f(glGetUniformLocation(shader.Program, "spotLight.outerCutOff"),
+            glm::cos(glm::radians(15.0f)));
 
-        // Propiedades del material
-        glUniform1f(glGetUniformLocation(shader.Program, "material.shininess"), 32.0f);
+        // Material
+        glUniform3f(glGetUniformLocation(shader.Program, "material.specular"),
+            0.5f, 0.5f, 0.5f);
+        glUniform1f(glGetUniformLocation(shader.Program, "material.shininess"),
+            32.0f);
 
-        // Configuración de vista y proyección
+        // Vista y proyección
         glm::mat4 view = camera.GetViewMatrix();
-<<<<<<< Updated upstream
-        glm::mat4 projection = glm::perspective(camera.GetZoom(), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
-        glUniformMatrix4fv(glGetUniformLocation(shader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-        glUniformMatrix4fv(glGetUniformLocation(shader.Program, "view"), 1, GL_FALSE, glm::value_ptr(view));
-        glUniform3f(glGetUniformLocation(shader.Program, "viewPos"), camera.GetPosition().x, camera.GetPosition().y, camera.GetPosition().z);
-=======
         glm::mat4 projection = glm::perspective(camera.GetZoom(),
             (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT,
             0.1f, 100.0f);
@@ -587,67 +674,41 @@ int main() {
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
 
-        glm::mat4 model(1);
->>>>>>> Stashed changes
-
+        glm::mat4 nave(1);
         // Renderizar ventanas
-        for (const auto& windowInstance : windows) {
-            RenderInstance(shader, ventanas, windowInstance);
+        for (const auto& wi : windows) {
+            RenderInstance(shader, ventanas, wi);
         }
 
-        // Renderizar lámpara
-        glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(lampTransform));
+        // Lámpara
+        glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"),
+            1, GL_FALSE, glm::value_ptr(lampTransform));
         lampara.Draw(shader);
 
-        // Renderizar techo
-        glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(ceilingTransform));
+        // Techo
+        glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"),
+            1, GL_FALSE, glm::value_ptr(ceilingTransform));
         techoo.Draw(shader);
 
-        // Renderizar piso
-        glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(floorTransform));
+        // Piso
+        glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"),
+            1, GL_FALSE, glm::value_ptr(floorTransform));
         piso.Draw(shader);
 
-        // Renderizar paredes
-        for (const auto& wall : walls) {
-            RenderInstance(shader, pared, wall);
+        // Paredes
+        for (const auto& w : walls) {
+            RenderInstance(shader, pared, w);
         }
 
-        // Renderizar pared frontal
-        glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(frontWallTransform));
+        // Pared frontal
+        glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"),
+            1, GL_FALSE, glm::value_ptr(frontWallTransform));
         pared.Draw(shader);
 
-        // Renderizar pizarrón
-        glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(boardTransform));
+        // Pizarrón
+        glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"),
+            1, GL_FALSE, glm::value_ptr(boardTransform));
         pizarron.Draw(shader);
-
-<<<<<<< Updated upstream
-        // Cambiar material para mesas (madera - medio brillo)
-        glUniform3f(glGetUniformLocation(shader.Program, "dirLight.ambient"), 0.3f, 0.3f, 0.3f);
-        glUniform3f(glGetUniformLocation(shader.Program, "dirLight.diffuse"), 0.9f, 0.9f, 0.9f);
-        glUniform3f(glGetUniformLocation(shader.Program, "material.specular"), 0.2f, 0.2f, 0.2f);
-        glUniform1f(glGetUniformLocation(shader.Program, "material.shininess"), 30.0f);
-=======
-        //Nave
-        model = glm::mat4(1);
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-        glUniform1i(glGetUniformLocation(shader.Program, "transparency"), 0);
-		model = glm::scale(model, glm::vec3(2.0f, 2.0f, 2.0f));
-        model = glm::translate(model, glm::vec3(0.0f, 5.0f, 0.0f));
-        model = glm::translate(model, glm::vec3(transBall, 0.0f, 0.0f));
-        model = glm::rotate(model, glm::radians(rotBall), glm::vec3(0.0f, 1.0f, 0.0f));
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-        Nave.Draw(shader);
-        //Rayo
-        if (rayo == true) {
-            model = glm::mat4(1);
-            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-            glUniform1i(glGetUniformLocation(shader.Program, "transparency"), 0);
-            model = glm::translate(model, glm::vec3(0.0f, 1.6f, 1.75f));
-
-
-            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-            Rayo.Draw(shader);
-        }
 
         // Definición de instancias de computadoras
         std::vector<ComputerInstance> computerInstances = {
@@ -656,16 +717,118 @@ int main() {
             { glm::vec3(-18.0f, 9.0f, 25.0f), 180.0f, glm::vec3(3.0f) },
             { glm::vec3(-12.0f, 9.0f, 25.0f), 180.0f, glm::vec3(3.0f) },
             { glm::vec3(-6.0f,  9.0f, 25.0f), 180.0f, glm::vec3(3.0f) },
->>>>>>> Stashed changes
 
-        // Renderizar puestos de trabajo
-        for (const auto& workstation : workstations) {
-            RenderInstance(shader, mesa, workstation.desk);
-            RenderInstance(shader, cpu, workstation.cpu);
-            RenderInstance(shader, silla, workstation.chair);
+            // fila 2 (izquierda:
+            { glm::vec3(-24.0f, 9.0f, 10.0f), 180.0f, glm::vec3(3.0f) },
+            { glm::vec3(-18.0f, 9.0f, 10.0f), 180.0f, glm::vec3(3.0f) },
+            { glm::vec3(-12.0f, 9.0f, 10.0f), 180.0f, glm::vec3(3.0f) },
+            { glm::vec3(-6.0f,  9.0f, 10.0f), 180.0f, glm::vec3(3.0f) },
+
+            // fila 3 (izquierda:
+            { glm::vec3(-24.0f, 9.0f, -5.0f), 180.0f, glm::vec3(3.0f) },
+            { glm::vec3(-18.0f, 9.0f, -5.0f), 180.0f, glm::vec3(3.0f) },
+            { glm::vec3(-12.0f, 9.0f, -5.0f), 180.0f, glm::vec3(3.0f) },
+            { glm::vec3(-6.0f,  9.0f, -5.0f), 180.0f, glm::vec3(3.0f) },
+
+            // fila 4 (izquierda:
+            { glm::vec3(-24.0f, 9.0f, -20.0f), 180.0f, glm::vec3(3.0f) },
+            { glm::vec3(-18.0f, 9.0f, -20.0f), 180.0f, glm::vec3(3.0f) },
+            { glm::vec3(-12.0f, 9.0f, -20.0f), 180.0f, glm::vec3(3.0f) },
+            { glm::vec3(-6.0f,  9.0f, -20.0f), 180.0f, glm::vec3(3.0f) },
+
+            // fila 5 (izquierda:
+            { glm::vec3(-24.0f, 9.0f, -35.0f), 180.0f, glm::vec3(3.0f) },
+            { glm::vec3(-18.0f, 9.0f, -35.0f), 180.0f, glm::vec3(3.0f) },
+            { glm::vec3(-12.0f, 9.0f, -35.0f), 180.0f, glm::vec3(3.0f) },
+            { glm::vec3(-6.0f,  9.0f, -35.0f), 180.0f, glm::vec3(3.0f) },
+
+            // fila 1 (derecha):
+            { glm::vec3(16.0f, 9.0f, 25.0f), 180.0f, glm::vec3(3.0f) },
+            { glm::vec3(22.0f, 9.0f, 25.0f), 180.0f, glm::vec3(3.0f) },
+            { glm::vec3(28.0f, 9.0f, 25.0f), 180.0f, glm::vec3(3.0f) },
+            { glm::vec3(34.0f, 9.0f, 25.0f), 180.0f, glm::vec3(3.0f) },
+
+            // fila 2 (derecha):
+            { glm::vec3(16.0f, 9.0f, 10.0f), 180.0f, glm::vec3(3.0f) },
+            { glm::vec3(22.0f, 9.0f, 10.0f), 180.0f, glm::vec3(3.0f) },
+            { glm::vec3(28.0f, 9.0f, 10.0f), 180.0f, glm::vec3(3.0f) },
+            { glm::vec3(34.0f, 9.0f, 10.0f), 180.0f, glm::vec3(3.0f) },
+
+            // fila 3 (derecha):
+            { glm::vec3(16.0f, 9.0f, -5.0f), 180.0f, glm::vec3(3.0f) },
+            { glm::vec3(22.0f, 9.0f, -5.0f), 180.0f, glm::vec3(3.0f) },
+            { glm::vec3(28.0f, 9.0f, -5.0f), 180.0f, glm::vec3(3.0f) },
+            { glm::vec3(34.0f, 9.0f, -5.0f), 180.0f, glm::vec3(3.0f) },
+
+            // fila 4 (derecha):
+            { glm::vec3(16.0f, 9.0f, -20.0f), 180.0f, glm::vec3(3.0f) },
+            { glm::vec3(22.0f, 9.0f, -20.0f), 180.0f, glm::vec3(3.0f) },
+            { glm::vec3(28.0f, 9.0f, -20.0f), 180.0f, glm::vec3(3.0f) },
+            { glm::vec3(34.0f, 9.0f, -20.0f), 180.0f, glm::vec3(3.0f) },
+
+            // fila 5 (derecha):
+            { glm::vec3(16.0f, 9.0f, -35.0f), 180.0f, glm::vec3(3.0f) },
+            { glm::vec3(22.0f, 9.0f, -35.0f), 180.0f, glm::vec3(3.0f) },
+            { glm::vec3(28.0f, 9.0f, -35.0f), 180.0f, glm::vec3(3.0f) },
+            { glm::vec3(34.0f, 9.0f, -35.0f), 180.0f, glm::vec3(3.0f) },
+
+        };
+
+        //Nave
+        nave = glm::mat4(1);
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(nave));
+        glUniform1i(glGetUniformLocation(shader.Program, "transparency"), 0);
+        nave = glm::scale(nave, glm::vec3(5.0f, 5.0f, 5.0f));
+        nave = glm::translate(nave, glm::vec3(-6.0f, 7.0f, 0.0f));
+        nave = glm::translate(nave, glm::vec3(transBall, 0.0f, 0.0f));
+        nave = glm::rotate(nave, glm::radians(rotBall), glm::vec3(0.0f, 1.0f, 0.0f));
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(nave));
+        Nave.Draw(shader);
+        //Rayo
+        if (rayo == true) {
+            //nave = glm::mat4(1);
+            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(nave));
+            glUniform1i(glGetUniformLocation(shader.Program, "transparency"), 0);
+            nave = glm::translate(nave, glm::vec3(0.0f, -1.5f, 1.75f));
+
+
+            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(nave));
+            Rayo.Draw(shader);
         }
 
-        // Renderizar mesas adicionales
+        //RenderComputer(shader, globalAnimationTime);
+        for (const auto& ci : computerInstances) {
+            // 1) monta la matriz padre para ESTA instancia
+            glm::mat4 compModel = glm::mat4(1.0f);
+            compModel = glm::translate(compModel, ci.position);
+            compModel = glm::rotate(compModel,
+                glm::radians(ci.rotationY),
+                glm::vec3(0.0f, 1.0f, 0.0f));
+            compModel = glm::scale(compModel, ci.scale);
+
+            // 2) dibuja todos los componentes bajo esa transformación
+            RenderComputer(shader, globalAnimationTime, compModel);
+        }
+
+
+        // Mesas (madera, medio brillo)
+        glUniform3f(glGetUniformLocation(shader.Program, "dirLight.ambient"),
+            0.3f, 0.3f, 0.3f);
+        glUniform3f(glGetUniformLocation(shader.Program, "dirLight.diffuse"),
+            0.9f, 0.9f, 0.9f);
+        glUniform3f(glGetUniformLocation(shader.Program, "material.specular"),
+            0.2f, 0.2f, 0.2f);
+        glUniform1f(glGetUniformLocation(shader.Program, "material.shininess"),
+            30.0f);
+
+        // Render puestos de trabajo
+        for (const auto& ws : workstations) {
+            RenderInstance(shader, mesa, ws.desk);
+            RenderInstance(shader, cpu, ws.cpu1);
+            RenderInstance(shader, cpu, ws.cpu2);
+            RenderInstance(shader, silla, ws.chair1);
+            RenderInstance(shader, silla, ws.chair2);
+        }
         RenderInstance(shader, mesa, teacherDesk);
         RenderInstance(shader, mesa, additionalDesk);
 
@@ -699,15 +862,15 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
 }
 
 void Animation() {
-    float velocidad = 0.0004f;
+    float velocidad = 0.04f;
     float tolerancia = 0.001f;
     float meta = pointLightPositions[0][0];  // Meta en coordenadas del mundo
-    float origenModelo = -3.0f;              // El origen de tu modelo
+    float origenModelo = -6.0f;              // El origen del modelo
 
     if (!AnimBall) return;
 
     float posicionActual = origenModelo + transBall;  // Posición actual real en X
-    rotBall += 0.02f;
+    rotBall += 0.1f;                            //Velocidad de rotación
 
     if (posicionActual < meta - tolerancia) {
         transBall += velocidad;
