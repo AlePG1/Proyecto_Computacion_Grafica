@@ -10,6 +10,12 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "SOIL2/SOIL2.h"
 #include "stb_image.h"
+#include <Windows.h>
+#include <mmsystem.h>
+#include <iostream>
+
+#pragma comment(lib, "winmm.lib")
+
 
 const GLuint WIDTH = 1200, HEIGHT = 900;
 int SCREEN_WIDTH, SCREEN_HEIGHT;
@@ -28,11 +34,13 @@ GLfloat lastFrame = 0.0f;
 
 bool showComputer = false; // Variable para controlar la visibilidad
 
+
 // Variables para la animación
 float globalAnimationTime = -1.0f;
 bool animationPlaying = false;
 float animationSpeed = 2.0f;
 
+bool change = false;
 float rotBall = 0;
 float transBall = 0; //Valor inicial de transformacion de la pelota
 bool AnimBall = false; //Bandera para indicar si la animacion esta activa
@@ -41,11 +49,15 @@ bool rayo = false; //Bandera para indicar si el rayo se activa
 
 // Positions of the point lights
 glm::vec3 pointLightPositions[] = {
-    glm::vec3(0.0f,2.0f, 0.0f),
-    glm::vec3(0.0f,0.0f, 0.0f),
-    glm::vec3(0.0f,0.0f,  0.0f),
+    glm::vec3(0.4f, 30.0f, -15.5f),
+    glm::vec3(0.4f,30.0f,  10.5f),
+    glm::vec3(0.4f,30.0f, -40.5f),
     glm::vec3(0.0f,0.0f, 0.0f)
 };
+
+// Light attributes
+glm::vec3 lightPos(0.0f, 0.0f, 0.0f);
+glm::vec3 Light1 = glm::vec3(0);
 
 // Estructura para keyframes de animación
 struct Keyframe {
@@ -270,6 +282,8 @@ void RenderInstance(Shader& shader, Model& model, const ModelInstance& ins) {
     model.Draw(shader);
 }
 
+
+
 int main() {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -295,6 +309,9 @@ int main() {
         std::cout << "Failed to initialize GLEW" << std::endl;
         return EXIT_FAILURE;
     }
+    //Musica de fondo (solo funciona en Windows y con archivos WAV)
+    std::cout << "Playing music \n";
+	PlaySound(TEXT("blueblood.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
 
     glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     glEnable(GL_DEPTH_TEST);
@@ -307,7 +324,7 @@ int main() {
     Model piso((char*)"Models/Proyecto/piso/piso.obj");
     Model pared((char*)"Models/Proyecto/Pared/pared.obj");
     Model techoo((char*)"Models/Proyecto/piso1/piso.obj");
-    Model lampara((char*)"Models/Proyecto/lampled/lampled.obj");
+    Model lampara((char*)"Models/Proyecto/Lampara_LEDobj/lamparaLeds.obj");
     Model pizarron((char*)"Models/Proyecto/pizarron/pizarron.obj");
     Model cpu((char*)"Models/Proyecto/computadora/computadora.obj");
     Model silla((char*)"Models/Proyecto/silla/silla.obj");
@@ -329,6 +346,12 @@ int main() {
     Model fuente((char*)"Models/Proyecto/fuente/fuente.obj");
     Model monitor((char*)"Models/Proyecto/monitor/monitor.obj");
     Model teclado((char*)"Models/Proyecto/teclado/teclado.obj");
+
+    // Cargar nuevos modelos
+    Model mesaasus((char*)"Models/Proyecto/MesaGamerOBJ/MesaASUS.obj");
+    Model sillanueva((char*)"Models/Proyecto/sillanueva/sillanueva.obj");
+    Model aireact((char*)"Models/Proyecto/AirOld/AireViejo.obj");
+    Model airenew((char*)"Models/Proyecto/AirNew/AireNuevo.obj");
 
     // Configurar puestos de trabajo
     std::vector<Workstation> workstations = {
@@ -512,7 +535,7 @@ int main() {
     };
 
     // Configuración de mesas adicionales (solo una definición)
-    ModelInstance teacherDesk = { glm::vec3(45.0f, 5.7f, -20.0f), 90.0f, glm::vec3(10.0f,10.0f,18.0f) };
+    ModelInstance teacherDesk = { glm::vec3(45.0f, 6.4f, -20.0f), 90.0f, glm::vec3(10.0f,10.0f,18.0f) };
     ModelInstance additionalDesk = { glm::vec3(-40.0f,6.4f, 20.0f),  90.0f, glm::vec3(10.0f,10.0f,18.0f) };
 
     // Inicializar animaciones de componentes
@@ -533,7 +556,13 @@ int main() {
     // Matrices precalculadas para objetos estáticos
     const glm::mat4 lampTransform = glm::scale(glm::translate(glm::mat4(1.0f),
         glm::vec3(0.4f, 30.0f, -15.5f)),
-        glm::vec3(40.7f, 42.7f, 00.7f));
+        glm::vec3(34.7f, 42.7f, 10.0f));
+    const glm::mat4 lampTransform2 = glm::scale(glm::translate(glm::mat4(1.0f),
+        glm::vec3(0.4f, 30.0f, 10.5f)),
+        glm::vec3(34.7f, 42.7f, 10.0f));
+    const glm::mat4 lampTransform3 = glm::scale(glm::translate(glm::mat4(1.0f),
+        glm::vec3(0.4f, 30.0f, -40.5f)),
+        glm::vec3(34.7f, 42.7f, 10.0f));
     const glm::mat4 ceilingTransform = glm::scale(glm::translate(glm::mat4(1.0f),
         glm::vec3(2.4f, 30.0f, -4.0f)),
         glm::vec3(68.7f, 5.7f, 114.7f));
@@ -600,7 +629,64 @@ int main() {
         glUniform3f(glGetUniformLocation(shader.Program, "dirLight.specular"),
             0.5f, 0.5f, 0.5f);
 
-        // Luz puntual (lámpara)
+        // Configurar luces
+        //Load Model
+    
+
+
+        glUniform1i(glGetUniformLocation(shader.Program, "diffuse"), 0);
+        glUniform1i(glGetUniformLocation(shader.Program, "specular"),1);
+
+        GLint viewPosLoc = glGetUniformLocation(shader.Program, "viewPos");
+        glUniform3f(viewPosLoc, camera.GetPosition().x, camera.GetPosition().y, camera.GetPosition().z);
+       
+        /*// Luz direccional
+        glUniform3f(glGetUniformLocation(shader.Program, "dirLight.direction"),
+            -0.2f, -1.0f, -0.3f);
+        glUniform3f(glGetUniformLocation(shader.Program, "dirLight.ambient"),
+            0.5f, 0.5f, 0.5f);
+        glUniform3f(glGetUniformLocation(shader.Program, "dirLight.diffuse"),
+            0.8f, 0.8f, 0.8f);
+        glUniform3f(glGetUniformLocation(shader.Program, "dirLight.specular"),
+            0.5f, 0.5f, 0.5f);
+            */
+    
+        // Luz puntual (lámparas)
+
+        // Point light
+        glm::vec3 lightColor;
+        lightColor.x = abs(sin(glfwGetTime() * Light1.x));
+        lightColor.y = abs(sin(glfwGetTime() * Light1.y));
+        lightColor.z = sin(glfwGetTime() * Light1.z);
+
+        // Point light 1
+        glUniform3f(glGetUniformLocation(shader.Program, "pointLights[1].position"), pointLightPositions[0].x, pointLightPositions[0].y, pointLightPositions[0].z);
+        glUniform3f(glGetUniformLocation(shader.Program, "pointLights[1].ambient"), 0.7f, 0.7f, 0.8f);
+        glUniform3f(glGetUniformLocation(shader.Program, "pointLights[1].diffuse"), 0.0f, 0.0f, 1.0f);
+        glUniform3f(glGetUniformLocation(shader.Program, "pointLights[1].specular"), 1.0f, 1.0f, 1.0f);
+        glUniform1f(glGetUniformLocation(shader.Program, "pointLights[1].constant"), 1.0f); //Factor de atenuación
+        glUniform1f(glGetUniformLocation(shader.Program, "pointLights[1].linear"), 0.022f);
+        glUniform1f(glGetUniformLocation(shader.Program, "pointLights[1].quadratic"), 0.0019f);
+
+        // Point light 2
+        glUniform3f(glGetUniformLocation(shader.Program, "pointLights[2].position"), pointLightPositions[1].x, pointLightPositions[1].y, pointLightPositions[1].z);
+        glUniform3f(glGetUniformLocation(shader.Program, "pointLights[2].ambient"), 0.7f, 0.7f, 0.8f);
+        glUniform3f(glGetUniformLocation(shader.Program, "pointLights[2].diffuse"), 0.95f, 0.0f, 0.0f);
+        glUniform3f(glGetUniformLocation(shader.Program, "pointLights[2].specular"), 1.0f, 1.0f, 1.0f);
+        glUniform1f(glGetUniformLocation(shader.Program, "pointLights[2].constant"), 1.0f);
+        glUniform1f(glGetUniformLocation(shader.Program, "pointLights[2].linear"), 0.022f);
+        glUniform1f(glGetUniformLocation(shader.Program, "pointLights[2].quadratic"), 0.0019f);
+
+        // Point light 3
+        glUniform3f(glGetUniformLocation(shader.Program, "pointLights[3].position"), pointLightPositions[2].x, pointLightPositions[2].y, pointLightPositions[2].z);
+        glUniform3f(glGetUniformLocation(shader.Program, "pointLights[3].ambient"), 0.7f, 0.7f, 0.8f);
+        glUniform3f(glGetUniformLocation(shader.Program, "pointLights[3].diffuse"), 0.0f, 0.95f, 0.0f);
+        glUniform3f(glGetUniformLocation(shader.Program, "pointLights[3].specular"), 1.0f, 1.0f, 1.0f);
+        glUniform1f(glGetUniformLocation(shader.Program, "pointLights[3].constant"), 1.0f);
+        glUniform1f(glGetUniformLocation(shader.Program, "pointLights[3].linear"), 0.022f);
+        glUniform1f(glGetUniformLocation(shader.Program, "pointLights[3].quadratic"), 0.0019f);
+        
+        
         glm::vec3 lightPos(0.4f, 20.0f, -10.5f);
         glUniform3f(glGetUniformLocation(shader.Program,
             "pointLights[0].position"),
@@ -620,6 +706,7 @@ int main() {
             "pointLights[0].linear"), 0.09f);
         glUniform1f(glGetUniformLocation(shader.Program,
             "pointLights[0].quadratic"), 0.032f);
+    
 
         // Spotlight (cámara)
         glUniform3f(glGetUniformLocation(shader.Program, "spotLight.position"),
@@ -675,6 +762,7 @@ int main() {
 
 
         glm::mat4 nave(1);
+        glm::mat4 aire(1);
         // Renderizar ventanas
         for (const auto& wi : windows) {
             RenderInstance(shader, ventanas, wi);
@@ -683,6 +771,16 @@ int main() {
         // Lámpara
         glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"),
             1, GL_FALSE, glm::value_ptr(lampTransform));
+        lampara.Draw(shader);
+
+        // Lámpara
+        glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"),
+            1, GL_FALSE, glm::value_ptr(lampTransform2));
+        lampara.Draw(shader);
+
+        // Lámpara
+        glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"),
+            1, GL_FALSE, glm::value_ptr(lampTransform3));
         lampara.Draw(shader);
 
         // Techo
@@ -778,8 +876,8 @@ int main() {
         nave = glm::mat4(1);
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(nave));
         glUniform1i(glGetUniformLocation(shader.Program, "transparency"), 0);
-        nave = glm::scale(nave, glm::vec3(5.0f, 5.0f, 5.0f));
-        nave = glm::translate(nave, glm::vec3(-6.0f, 7.0f, 0.0f));
+        nave = glm::scale(nave, glm::vec3(20.0f, 20.0f, 20.0f));
+        nave = glm::translate(nave, glm::vec3(-2.0f, 4.0f, -3.0f));
         nave = glm::translate(nave, glm::vec3(transBall, 0.0f, 0.0f));
         nave = glm::rotate(nave, glm::radians(rotBall), glm::vec3(0.0f, 1.0f, 0.0f));
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(nave));
@@ -821,20 +919,88 @@ int main() {
         glUniform1f(glGetUniformLocation(shader.Program, "material.shininess"),
             30.0f);
 
-        // Render puestos de trabajo
+		
+
+        if (change == false) {
+            // Render puestos de trabajo
+            for (const auto& ws : workstations) {
+                RenderInstance(shader, mesa, ws.desk);
+                RenderInstance(shader, silla, ws.chair1);
+                RenderInstance(shader, silla, ws.chair2);
+            }
+            RenderInstance(shader, mesa, teacherDesk);
+            RenderInstance(shader, mesa, additionalDesk);
+
+            //AireAcondicionado
+            aire = glm::mat4(1);
+            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(aire));
+            glUniform1i(glGetUniformLocation(shader.Program, "transparency"), 0);
+            aire = glm::scale(aire, glm::vec3(15.0f, 5.0f, 5.0f));
+            aire = glm::translate(aire, glm::vec3(1.0f, 5.0f, -11.5f));
+            aire = glm::rotate(aire, 1.5f, glm::vec3(0.0f, -1.0f, 0.0f));
+            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(aire));
+            aireact.Draw(shader);
+        }
+        else {
+            // Render puestos de trabajo
+            for (const auto& ws : workstations) {
+                RenderInstance(shader, mesaasus, ws.desk);
+                RenderInstance(shader, sillanueva, ws.chair1);
+                RenderInstance(shader, sillanueva, ws.chair2);
+            }
+            RenderInstance(shader, mesaasus, teacherDesk);
+            RenderInstance(shader, mesaasus, additionalDesk);
+
+            //AireAcondicionado
+            aire = glm::mat4(1);
+            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(aire));
+            glUniform1i(glGetUniformLocation(shader.Program, "transparency"), 0);
+            aire = glm::scale(aire, glm::vec3(15.0f, 5.0f, 5.0f));
+            aire = glm::translate(aire, glm::vec3(1.0f, 5.0f, -11.5f));
+            aire = glm::rotate(aire, 1.5f, glm::vec3(0.0f, -1.0f, 0.0f));
+            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(aire));
+            airenew.Draw(shader);
+        }
         for (const auto& ws : workstations) {
-            RenderInstance(shader, mesa, ws.desk);
             RenderInstance(shader, cpu, ws.cpu1);
             RenderInstance(shader, cpu, ws.cpu2);
-            RenderInstance(shader, silla, ws.chair1);
-            RenderInstance(shader, silla, ws.chair2);
         }
-        RenderInstance(shader, mesa, teacherDesk);
-        RenderInstance(shader, mesa, additionalDesk);
+        
+        // Also draw the lamp object, again binding the appropriate shader
+        lampShader.Use();
+        // Get location objects for the matrices on the lamp shader (these could be different on a different shader)
+        modelLoc = glGetUniformLocation(lampShader.Program, "model");
+        viewLoc = glGetUniformLocation(lampShader.Program, "view");
+        projLoc = glGetUniformLocation(lampShader.Program, "projection");
+
+        // Set matrices
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
+        //Fuentes de luz de lamparas
+        std::vector<glm::vec3> lampPositions = {
+            pointLightPositions[0],  // 
+            pointLightPositions[1],  // 
+            pointLightPositions[2]   // 
+        };
+
+        // Draw each lamp with its own transform
+        for (int i = 0; i < 3; i++) {
+            glm::mat4 lampModel(1.0f);
+            lampModel = glm::translate(lampModel, pointLightPositions[i]);
+            lampModel = glm::scale(lampModel, glm::vec3(34.7f, 42.7f, 10.0f));
+
+            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(lampModel));
+            lampara.Draw(lampShader);
+        }
+
+        glBindVertexArray(0);
 
         glfwSwapBuffers(window);
     }
 
+   
+    
     glfwTerminate();
     return 0;
 }
@@ -859,18 +1025,24 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
         AnimBall = !AnimBall;
 
     }
+    //Tecla para cambiar por modelos nuevos
+    if (keys[GLFW_KEY_F] && action == GLFW_PRESS)
+    {
+        change = !change;
+
+    }
 }
 
 void Animation() {
-    float velocidad = 0.04f;
+    float velocidad = 0.008f;
     float tolerancia = 0.001f;
     float meta = pointLightPositions[0][0];  // Meta en coordenadas del mundo
-    float origenModelo = -6.0f;              // El origen del modelo
+    float origenModelo = -2.0f;              // El origen de tu modelo
 
     if (!AnimBall) return;
 
     float posicionActual = origenModelo + transBall;  // Posición actual real en X
-    rotBall += 0.1f;                            //Velocidad de rotación
+    rotBall += 0.1f;
 
     if (posicionActual < meta - tolerancia) {
         transBall += velocidad;

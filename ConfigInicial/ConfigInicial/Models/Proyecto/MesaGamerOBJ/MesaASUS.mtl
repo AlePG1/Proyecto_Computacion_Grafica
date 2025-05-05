@@ -1,7 +1,7 @@
 # 3ds Max Wavefront OBJ Exporter v0.99 - (c)2007 guruware
-# File Created: 03.05.2025 21:19:09
+# File Created: 04.05.2025 14:30:27
 
-newmtl tripo_mat_451110a3
+newmtl MesaASUS_tripo_mat_451110a3
 	Kd 0.8000 0.8000 0.8000
 	Ks 0.8000 0.8000 0.8000
 	Tr 0.0000
@@ -11,7 +11,7 @@ newmtl tripo_mat_451110a3
 	Pm 0.0000
 	Pc 0.0000
 	Pcr 0.0000
-	Ni 1.5200
+	Ni 1.5000
 	Ke 0.0000 0.0000 0.0000
 	illum 2
 	map_Kd Diffuse_Bake.jpg
